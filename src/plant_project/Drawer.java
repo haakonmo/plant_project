@@ -19,6 +19,15 @@ import com.jogamp.opengl.util.Animator;
 
 public class Drawer implements GLEventListener {
 	
+	private final static char NOTHING = 'X';
+	private final static char GROW = 'F';
+	private final static char NORTH = 'n';
+	private final static char EAST = 'e';
+	private final static char WEST = 'w';
+	private final static char SOUTH = 's';
+	private final static char PUSH = '[';
+	private final static char POP = ']';
+	
 	private ArrayList<Plant> plants = new ArrayList<Plant>();
 	private float rotateT = 0.0f;
 	
@@ -69,39 +78,39 @@ public class Drawer implements GLEventListener {
 			for (int i = 0; i < lString.length(); i++) {
 				char c = lString.charAt(i);
 				switch (c) {
-				case 'X':
+				case NOTHING:
 					//do nothing
 					break;
-				case 'F':
+				case GROW:
 					//drawLine
 					float lineLength = 0.01f;
 					drawLine(gl, 0, 0, 0, lineLength);
 					gl.glTranslatef(0, lineLength, 0.0f);
 					break;
-				case '[':
+				case PUSH:
 					//push position and angle
 					gl.glPushMatrix();
 					break;
-				case ']':
+				case POP:
 					//pop position and angle
 					gl.glPopMatrix();
 					break;
-				case 'n':
+				case NORTH:
 					//rotate against north, Z
 					gl.glRotatef(plant.gene.angle, 0.0f, 0.0f, 1.0f);
 					gl.glRotatef(0, 0.0f, 1.0f, 0.0f);
 					break;
-				case 'e':
+				case EAST:
 					//rotate against east, X
 					gl.glRotatef(plant.gene.angle, 0.0f, 0.0f, 1.0f);
 					gl.glRotatef(90, 0.0f, 1.0f, 0.0f);
 					break;
-				case 'w':
+				case WEST:
 					//rotate against west, -X
 					gl.glRotatef(plant.gene.angle, 0.0f, 0.0f, 1.0f);
 					gl.glRotatef(180, 0.0f, 1.0f, 0.0f);
 					break;
-				case 's':
+				case SOUTH:
 					//rotate against south, -Z
 					gl.glRotatef(plant.gene.angle, 0.0f, 0.0f, 1.0f);
 					gl.glRotatef(270, 0.0f, 1.0f, 0.0f);
