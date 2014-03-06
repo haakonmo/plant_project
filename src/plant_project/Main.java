@@ -5,22 +5,109 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
+
+	/**
+	 * Water value in percent
+	 */
+	public static int water = 100;
+
+	/**
+	 * Sun value in percent
+	 */
+	public static int sun = 100;
+
+	/**
+	 * Mutation probability
+	 */
+	public static int mutation = 1;
+
+	/**
+	 * Soil nutrition
+	 */
+	public static int nutrition = 100;
+
+	/**
+	 * Plants in world
+	 */
 	public static ArrayList<Plant> plants = new ArrayList<Plant>();
 
 	public static void main(String[] args) {
-		
-		//init
+
+		// init
 		Drawer drawer = new Drawer();
-		plants.add(new Plant(0, 0, new Gene(15, new String[] {"Fn[[X]sX]eF[sFX]wX", "FF"}, new Color(0.0f, 0.8f, 0.2f))));
-		plants.add(new Plant(1, 0, new Gene(15, new String[] {"Fs[[X]eX]nF[wFX]wX", "FF"}, new Color(0.2f, 0.2f, 0.2f))));
-		
+		plants.add(new Plant(0, 0, new Gene(15, new String[] {
+				"Fn[[X]sX]eF[sFX]X", "FF" }, new Color(0.0f, 0.8f, 0.2f),
+				Color.BLUE, 2, Plant.MAX_ITERATION)));
+		plants.add(new Plant(1, 0, new Gene(15, new String[] {
+				"Fs[[F]eX]nF[wFX]F", "FF" }, new Color(0.2f, 0.9f, 0.0f),
+				Color.BLUE, 2, Plant.MAX_ITERATION)));
+
+		System.out.println(String.format("Sun:\t\t %d%% (s=?)", sun));
+		System.out.println(String.format("Water:\t\t %d%% (w=?)", water));
+		System.out.println(String.format("Mutation Probability:\t %d%% (m=?)",
+				mutation));
 		Scanner sc = new Scanner(System.in);
-		while (!sc.nextLine().equals("q")) {
-			for (Plant plant: plants) {
-				plant.grow();
+		String in;
+		while (!(in = sc.nextLine()).equals("q")) {
+			char c = in.length() > 0 ? in.charAt(0) : ' ';
+			switch (c) {
+
+			case 'p':// plant p=(rules seperated by ,), reproducecount,
+						// maturityage
+				if (in.length() < 3) {
+					plants.add(new Plant(1, 0, new Gene(15, new String[] {
+							"Fs[[F]eX]nF[wFX]F", "FF" }, new Color(0.2f, 0.9f,
+							0.0f), Color.BLUE, 2, Plant.MAX_ITERATION)));
+				} else {
+					String[] plantElements = in.split("=")[1].split(";");
+					String[] rules = plantElements[0].substring(1,
+							plantElements[0].length() - 2).split(",");
+					plants.add(new Plant(0, 0, new Gene(15, rules, Color.GREEN,
+							Color.BLUE, Integer.parseInt(plantElements[1]),
+							Integer.parseInt(plantElements[2]))));
+				}
+				System.out.println("planted in 0, 0!");
+				break;
+			case 's':
+				sun = Integer.parseInt(in.split("=")[1]);
+				System.out.println(String.format("%d%% sun", sun));
+				break;
+			case 'w':
+				water = Integer.parseInt(in.split("=")[1]);
+				System.out.println(String.format("%d%% water", water));
+				break;
+			case 'm':
+				mutation = Integer.parseInt(in.split("=")[1]);
+				System.out.println(String.format("%d%% mutation probability",
+						mutation));
+				break;
+			case 'n':
+				nutrition = Integer.parseInt(in.split("=")[1]);
+				System.out.println(String.format("%d%% nutrition ", nutrition));
+				break;
+			default:
+				ArrayList<Plant> newPlants = (ArrayList<Plant>) plants.clone();
+				int n = nutrition;
+				int en;
+				for (Plant plant : plants) {
+					// plant dies
+					if (plant.getAge() >= plant.MAX_AGE)
+						newPlants.remove(plant);
+					else {
+						// plant reproduces
+						en = plant.getlString().length();
+						if (n >= en) {
+							n -= plant.getlString().length();
+							newPlants.addAll(plant.grow());
+						} else
+							newPlants.remove(plant);
+					}
+				}
+				plants = newPlants;
+				System.out.println("tick");
+				drawer.draw(plants);
+				break;
 			}
-			System.out.println("tick");
-			drawer.draw(plants);
 		}
 	}
 
