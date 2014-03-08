@@ -76,7 +76,7 @@ public class Main {
 				System.out.println(String.format("%d%% nutrition ", nutrition));
 				break;
 			case 'q':
-				System.exit(0);
+				this.drawer.quit(); // does not return
 				break;
 			default:
 				ArrayList<Plant> newPlants = new ArrayList<Plant>(plants);
@@ -108,7 +108,7 @@ public class Main {
 	 */
 	public Main() {
 		this.plants = new ArrayList<Plant>();
-		this.drawer = new Drawer();
+		this.drawer = new Drawer(this);
 
 		plants.add(new Plant(0, 0, new Gene(15, new String[] {
 			"Fn[[X]sX]eF[sFX]X", "FF" }, new Color(0.0f, 0.8f, 0.2f),
