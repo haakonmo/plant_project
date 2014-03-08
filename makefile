@@ -14,7 +14,7 @@ run: $(OBJECTS)
 	java -cp $(CLASSPATH) -ea -Xms64m -Xmx512m $(MAIN)
 
 $(OBJECTS): $(SOURCES) makefile | obj
-	javac -cp $(CLASSPATH) -d obj $(SOURCES)
+	javac -cp $(CLASSPATH) -Xlint:unchecked -d obj $(SOURCES)
 
 clean:
 	rm -rf obj
