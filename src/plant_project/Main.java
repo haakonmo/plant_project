@@ -29,42 +29,32 @@ public class Main {
 	/**
 	 * Plants in world
 	 */
-	public static ArrayList<Plant> plants = new ArrayList<Plant>();
+	public ArrayList<Plant> plants;
 
-	public static void main(String[] args) {
+	/**
+	 * Drawing window
+	 */
+	public Drawer drawer;
 
-		// init
-		Drawer drawer = new Drawer();
-		plants.add(new Plant(0, 0, new Gene(15, new String[] {
-				"Fn[[X]sX]eF[sFX]X", "FF" }, new Color(0.0f, 0.8f, 0.2f),
-				Color.BLUE, 2, Plant.MAX_ITERATION)));
-		plants.add(new Plant(1, 0, new Gene(15, new String[] {
-				"Fs[[F]eX]nF[wFX]F", "FF" }, new Color(0.2f, 0.9f, 0.0f),
-				Color.BLUE, 2, Plant.MAX_ITERATION)));
-
-		System.out.println(String.format("Sun:\t\t %d%% (s=?)", sun));
-		System.out.println(String.format("Water:\t\t %d%% (w=?)", water));
-		System.out.println(String.format("Mutation Probability:\t %d%% (m=?)",
-				mutation));
-		Scanner sc = new Scanner(System.in);
-		String in;
-		while (!(in = sc.nextLine()).equals("q")) {
-			char c = in.length() > 0 ? in.charAt(0) : ' ';
-			switch (c) {
-
+	/**
+	 * Use input from GL
+	 */
+	public void keyPress(char c, String in)
+	{
+		switch (c) {
 			case 'p':// plant p=(rules seperated by ,), reproducecount,
-						// maturityage
+				// maturityage
 				if (in.length() < 3) {
 					plants.add(new Plant(1, 0, new Gene(15, new String[] {
-							"Fs[[F]eX]nF[wFX]F", "FF" }, new Color(0.2f, 0.9f,
+						"Fs[[F]eX]nF[wFX]F", "FF" }, new Color(0.2f, 0.9f,
 							0.0f), Color.BLUE, 2, Plant.MAX_ITERATION)));
 				} else {
 					String[] plantElements = in.split("=")[1].split(";");
 					String[] rules = plantElements[0].substring(1,
 							plantElements[0].length() - 2).split(",");
 					plants.add(new Plant(0, 0, new Gene(15, rules, Color.GREEN,
-							Color.BLUE, Integer.parseInt(plantElements[1]),
-							Integer.parseInt(plantElements[2]))));
+									Color.BLUE, Integer.parseInt(plantElements[1]),
+									Integer.parseInt(plantElements[2]))));
 				}
 				System.out.println("planted in 0, 0!");
 				break;
@@ -79,14 +69,17 @@ public class Main {
 			case 'm':
 				mutation = Integer.parseInt(in.split("=")[1]);
 				System.out.println(String.format("%d%% mutation probability",
-						mutation));
+							mutation));
 				break;
 			case 'n':
 				nutrition = Integer.parseInt(in.split("=")[1]);
 				System.out.println(String.format("%d%% nutrition ", nutrition));
 				break;
+			case 'q':
+				System.exit(0);
+				break;
 			default:
-				ArrayList<Plant> newPlants = (ArrayList<Plant>) plants.clone();
+				ArrayList<Plant> newPlants = new ArrayList<Plant>(plants);
 				int n = nutrition;
 				int en;
 				for (Plant plant : plants) {
@@ -107,8 +100,45 @@ public class Main {
 				System.out.println("tick");
 				drawer.draw(plants);
 				break;
-			}
 		}
 	}
 
+	/**
+	 * Main constructor
+	 */
+	public Main() {
+		this.plants = new ArrayList<Plant>();
+		this.drawer = new Drawer();
+
+		plants.add(new Plant(0, 0, new Gene(15, new String[] {
+			"Fn[[X]sX]eF[sFX]X", "FF" }, new Color(0.0f, 0.8f, 0.2f),
+			Color.BLUE, 2, Plant.MAX_ITERATION)));
+		plants.add(new Plant(1, 0, new Gene(15, new String[] {
+			"Fs[[F]eX]nF[wFX]F", "FF" }, new Color(0.2f, 0.9f, 0.0f),
+			Color.BLUE, 2, Plant.MAX_ITERATION)));
+
+		System.out.format("%-16s %3d%% (s=?)\n", "Sun:", sun);
+		System.out.format("%-16s %3d%% (w=?)\n", "Water:", water);
+		System.out.format("%-16s %3d%% (m=?)\n", "Mutation Prob:", mutation);
+	}
+
+	/**
+	 * Main loop
+	 */
+	public void run() {
+		Scanner sc = new Scanner(System.in);
+		while (true) {
+			String in = sc.nextLine();
+			char c = in.length() > 0 ? in.charAt(0) : ' ';
+			keyPress(c, in);
+		}
+	}
+
+	/**
+	 * Main..
+	 */
+	public static void main(String[] args) {
+		Main main = new Main();
+		main.run();
+	}
 }
