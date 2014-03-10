@@ -120,20 +120,23 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		gl.glEnd();
 	}
 
-	private void drawFlower(GL2 gl, Color color) {
-		final int   pedals = 5;
-		final float length = 0.10f;
-		final float radius = 0.05f;
+	private void drawPedals(GL2 gl, Color color,
+			int pedals, float length, float radius, float norm) {
 
-		gl.glColor3ub((byte)color.getRed(),
-		              (byte)color.getGreen(),
-		              (byte)color.getBlue());
-
-		// Draw pedals
+		// Draw stemp vertex
+		gl.glColor3ub((byte)(color.getRed()   * norm),
+			      (byte)(color.getGreen() * norm),
+			      (byte)(color.getBlue()  * norm));
 		gl.glBegin(GL2.GL_TRIANGLE_FAN);
-		gl.glNormal3f(0f, -1f, 0f);
-		gl.glVertex3f(0f,  0f, 0f);
+		gl.glNormal3f(0f, -norm, 0f);
+		gl.glVertex3f(0f,  0f,   0f);
+
+		// Draw outside verticies
 		for (int i = 0; i <= pedals; i++) {
+			gl.glColor3ub((byte)color.getRed(),
+			              (byte)color.getGreen(),
+			              (byte)color.getBlue());
+
 			float a  = (float)Math.PI * 2f / pedals * i;
 			float x  = (float)Math.sin(a) * radius;
 			float z  = (float)Math.cos(a) * radius;
@@ -146,11 +149,26 @@ public class Drawer extends WindowAdapter implements KeyListener,
 
 			gl.glNormal3f(-nx/d, -radius/d, -nz/d);
 			gl.glVertex3f(  x,    length,     z);
-
-			gl.glNormal3f(-nx/d, -radius/d, -nz/d);
-			gl.glVertex3f(  x,    length,     z);
 		}
 		gl.glEnd();
+	}
+
+	private void drawFlower(GL2 gl, Color color) {
+		final int   pedals = 5;
+		final float length = 0.10f;
+		final float radius = 0.05f;
+
+		gl.glEnable(GL2.GL_CULL_FACE);
+
+		// Draw outside
+		gl.glCullFace(GL2.GL_FRONT);
+		this.drawPedals(gl, color, pedals, length, radius, 0.5f);
+
+		// Draw inside
+		gl.glCullFace(GL2.GL_BACK);
+		this.drawPedals(gl, color, pedals, length, radius, 0.1f);
+
+		gl.glDisable(GL2.GL_CULL_FACE);
 	}
 
 	private void drawPlant(GL2 gl, Plant plant) {
