@@ -119,12 +119,17 @@ public class Main {
 		this.plants = new ArrayList<Plant>();
 		this.drawer = new Drawer(this);
 
-		plants.add(new Plant(0, 0, new Gene(15, new String[] {
-			"Fn[[X]sXL]eF[sFX]X", "FF" }, new Color(0.0f, 0.8f, 0.2f),
-			Color.BLUE, 2, Plant.MAX_ITERATION)));
-		plants.add(new Plant(1, 0, new Gene(15, new String[] {
-			"Fs[[FL]eX]nF[wFXL]F", "FF" }, new Color(0.2f, 0.9f, 0.0f),
-			Color.BLUE, 2, Plant.MAX_ITERATION)));
+		plants.add(new Plant(0, 0, new Gene(15,
+			new String[] { "Fn[[X]sXL]eF[sFX]X", "FF" },
+			new Color(0.0f, 0.8f, 0.2f),
+			new Color(0.3f, 0.3f, 0.8f),
+			2, Plant.MAX_ITERATION)));
+
+		plants.add(new Plant(1, 0, new Gene(15,
+			new String[] { "Fs[[FL]eX]nF[wFXL]F", "FF" },
+			new Color(0.2f, 0.9f, 0.9f),
+			new Color(0.8f, 0.3f, 0.3f),
+			2, Plant.MAX_ITERATION)));
 
 		System.out.format("%-16s %3d%% (s=?)\n", "Sun:", sun);
 		System.out.format("%-16s %3d%% (w=?)\n", "Water:", water);

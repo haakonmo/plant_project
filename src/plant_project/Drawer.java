@@ -17,8 +17,10 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GL2ES1;
 import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.GLEventListener;
+import javax.media.opengl.glu.GLU;
+import javax.media.opengl.glu.GLUquadric;
+import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.fixedfunc.GLLightingFunc;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
 
@@ -28,15 +30,15 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		MouseListener, MouseWheelListener, MouseMotionListener,
 		GLEventListener {
 
-	private final static char NOTHING 		= 'X';
-	private final static char GROW    		= 'F';
-	private final static char GROW_FlOWER	= 'L';
-	private final static char NORTH   		= 'n';
-	private final static char EAST    		= 'e';
-	private final static char WEST    		= 'w';
-	private final static char SOUTH   		= 's';
-	private final static char PUSH    		= '[';
-	private final static char POP     		= ']';
+	private final static char NOTHING     = 'X';
+	private final static char GROW        = 'F';
+	private final static char GROW_FlOWER = 'L';
+	private final static char NORTH       = 'n';
+	private final static char EAST        = 'e';
+	private final static char WEST        = 'w';
+	private final static char SOUTH       = 's';
+	private final static char PUSH        = '[';
+	private final static char POP         = ']';
 
 	public final static float NORTH_BOUND =  4.0f;
 	public final static float EAST_BOUND  =  4.0f;
@@ -52,6 +54,7 @@ public class Drawer extends WindowAdapter implements KeyListener,
 
 	private ArrayList<Plant> plants = new ArrayList<Plant>();
 	private float rotateT = 0.0f;
+	private GLU   glu = null;
 
 	// Interface the rest of the world
 	private Main     main;
@@ -62,7 +65,7 @@ public class Drawer extends WindowAdapter implements KeyListener,
 	private Animator animator;
 
 	// Camera state
-	private DragMode dragMode;
+	private DragMode dragMode = DragMode.NONE;
 	private double   dragX, dragY;
 	private double   rotation[] = {0,   0,  0};
 	private double   location[] = {35, -25, 5};
@@ -72,6 +75,7 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		this.canvas   = new GLCanvas();
 		this.frame    = new Frame("Plant world");
 		this.animator = new Animator(canvas);
+		this.glu      = new GLU();
 		canvas.addGLEventListener(this);
 		canvas.addKeyListener(this);
 		canvas.addMouseListener(this);
@@ -96,15 +100,54 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		gl.glEnd();
 	}
 
-	private void drawPlant(GL2 gl, Plant plant) {
-		String lString = plant.getlString();
-		gl.glPushMatrix();
-		Color stemColor = plant.getGene().getStemColor();
-		Color flowerColor = plant.getGene().getFlowerColor();
-		gl.glColor3f(stemColor.getRed()   / 255.0f,
-		             stemColor.getGreen() / 255.0f,
-		             stemColor.getBlue()  / 255.0f);
+	private void drawStem(GL2 gl, Color color, float length) {
+		gl.glColor3ub((byte)color.getRed(),
+			      (byte)color.getGreen(),
+			      (byte)color.getBlue());
 
+		drawLine(gl, 0, 0, 0, length);
+	}
+
+	private void drawFlower(GL2 gl, Color color) {
+		final int   pedals = 5;
+		final float length = 0.10f;
+		final float radius = 0.05f;
+
+		gl.glColor3ub((byte)color.getRed(),
+		              (byte)color.getGreen(),
+		              (byte)color.getBlue());
+
+		// Draw pedals
+		gl.glBegin(GL2.GL_TRIANGLE_FAN);
+		gl.glNormal3f(0f, -1f, 0f);
+		gl.glVertex3f(0f,  0f, 0f);
+		for (int i = 0; i <= pedals; i++) {
+			float a  = (float)((2f*Math.PI) / pedals)*i;
+			float x  = (float)Math.sin(a) * radius;
+			float z  = (float)Math.cos(a) * radius;
+
+			float na = (float)((2f*Math.PI) / pedals)*i;
+			float nx = (float)Math.sin(a) * -length;
+			float nz = (float)Math.cos(a) * -length;
+
+			float d  = (float)Math.sqrt(length*length + radius*radius);
+
+			gl.glNormal3f(-nx/d, -radius/d, -nz/d);
+			gl.glVertex3f(  x,    length,     z);
+
+			gl.glNormal3f(-nx/d, -radius/d, -nz/d);
+			gl.glVertex3f(  x,    length,     z);
+		}
+		gl.glEnd();
+	}
+
+	private void drawPlant(GL2 gl, Plant plant) {
+		String lString    = plant.getlString();
+
+		Color stemColor   = plant.getGene().getStemColor();
+		Color flowerColor = plant.getGene().getFlowerColor();
+
+		gl.glPushMatrix();
 		// move to plant origin
 		gl.glTranslatef(plant.getX(), 0.0f, plant.getY());
 		for (int i = 0; i < lString.length(); i++) {
@@ -116,28 +159,12 @@ public class Drawer extends WindowAdapter implements KeyListener,
 			case GROW:
 				// drawLine
 				float lineLength = 0.1f;
-				drawLine(gl, 0, 0, 0, lineLength);
+				this.drawStem(gl, stemColor, lineLength);
 				gl.glTranslatef(0, lineLength, 0.0f);
 				break;
 			case GROW_FlOWER:
 				if (plant.getAge() >= Plant.MAX_ITERATION)
-				{
-					gl.glColor3f(flowerColor.getRed()   / 255.0f,
-								 flowerColor.getGreen() / 255.0f,
-								 flowerColor.getBlue()  / 255.0f);
-					// drawSphere / flower
-					gl.glBegin(GL2.GL_QUADS);
-					gl.glColor3f(0.3f, 0.2f, 0.2f); // set the color of the ground
-					gl.glVertex3f(0.05f, 0.0f, 0.05f);
-					gl.glVertex3f(-0.05f, 0.0f, 0.05f);
-					gl.glVertex3f(-0.05f, 0.0f, -0.05f);
-					gl.glVertex3f(0.05f, 0.0f, -0.05f);
-					gl.glEnd();
-					
-					gl.glColor3f(stemColor.getRed()   / 255.0f,
-								 stemColor.getGreen() / 255.0f,
-								 stemColor.getBlue()  / 255.0f);
-				}
+					this.drawFlower(gl, flowerColor);
 				break;
 			case PUSH:
 				// push position and angle
@@ -176,12 +203,31 @@ public class Drawer extends WindowAdapter implements KeyListener,
 
 	private void drawGround(GL2 gl) {
 		gl.glBegin(GL2.GL_QUADS);
-		gl.glColor3f(0.3f, 0.2f, 0.2f); // set the color of the ground
+		gl.glColor3f(0.4f, 0.3f, 0.2f); // set the color of the ground
+		gl.glNormal3f(0f, 1f, 0f);
 		gl.glVertex3f(WEST_BOUND, 0.0f, NORTH_BOUND);
 		gl.glVertex3f(EAST_BOUND, 0.0f, NORTH_BOUND);
 		gl.glVertex3f(EAST_BOUND, 0.0f, SOUTH_BOUND);
 		gl.glVertex3f(WEST_BOUND, 0.0f, SOUTH_BOUND);
 		gl.glEnd();
+	}
+
+
+	private void drawTests(GL2 gl) {
+		boolean testLighting = false;
+		if (testLighting) {
+			final float radius = 1f;
+			final int   slices = 16;
+			final int   stacks = 16;
+			GLUquadric earth = glu.gluNewQuadric();
+			gl.glColor3f(0.3f, 0.5f, 1f);
+			gl.glTranslatef(-2f, 1f, -2f);
+			glu.gluQuadricDrawStyle(earth, GLU.GLU_FILL);
+			glu.gluQuadricNormals(earth, GLU.GLU_FLAT);
+			glu.gluQuadricOrientation(earth, GLU.GLU_OUTSIDE);
+			glu.gluSphere(earth, radius, slices, stacks);
+			glu.gluDeleteQuadric(earth);
+		}
 	}
 
 	/*
@@ -368,18 +414,21 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 		gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
 
-		// setup the projection view
+		// Setup projection and camera
 		gl.glLoadIdentity();
 
-		//gl.glTranslatef(0.0f, -2.0f, -7.0f);
-
+		// Camera 1
 		gl.glRotated( this.rotation[0], 1f, 0f, 0f); // tiltx
 		gl.glRotated( this.rotation[2], 0f, 0f, 1f); // tiltz
 
+		// Camera 2
 		gl.glTranslated(0f, 0f, -this.location[2]);
-
 		gl.glRotated( this.location[0], 1f, 0f, 0f); // lat
 		gl.glRotated(-this.location[1], 0f, 1f, 0f); // lon
+
+		// Lighting
+		float light_position[] = {-40.0f, 80.0f, 40.0f, 1.0f};
+		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, light_position, 0);
 
 		// draw plants
 		for (Plant plant : plants)
@@ -387,6 +436,9 @@ public class Drawer extends WindowAdapter implements KeyListener,
 
 		// draw ground
 		this.drawGround(gl);
+
+		// debugging
+		this.drawTests(gl);
 
 		// swap buffers
 		gl.glFlush();
@@ -396,11 +448,38 @@ public class Drawer extends WindowAdapter implements KeyListener,
 	public void init(GLAutoDrawable glDrawable) {
 		GL2 gl = glDrawable.getGL().getGL2();
 		gl.glShadeModel(GLLightingFunc.GL_SMOOTH);
-		gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		gl.glClearColor(0.7f, 0.8f, 1.0f, 1.0f);
 		gl.glClearDepth(1.0f);
 		gl.glEnable(GL.GL_DEPTH_TEST);
 		gl.glDepthFunc(GL.GL_LEQUAL);
 		gl.glHint(GL2ES1.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
+
+		/* Coloring */
+		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glEnable(GL2.GL_BLEND);
+		gl.glDisable(GL2.GL_ALPHA_TEST);
+
+		gl.glEnable(GL2.GL_LIGHT0);
+		gl.glEnable(GL2.GL_LIGHTING);
+
+		gl.glEnable(GL2.GL_LINE_SMOOTH);
+
+		gl.glDisable(GL2.GL_TEXTURE_2D);
+		gl.glDisable(GL2.GL_COLOR_MATERIAL);
+
+		/* Lighting */
+		gl.glMatrixMode(GL2.GL_MODELVIEW);
+		gl.glPushMatrix();
+		gl.glLoadIdentity();
+		float light_ambient[]  = {0.4f, 0.4f, 0.4f, 1.0f};
+		float light_diffuse[]  = {0.6f, 0.6f, 0.8f, 1.0f};
+		float light_position[] = {-40.0f, 80.0f, 40.0f, 1.0f};
+		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT,  light_ambient,  0);
+		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE,  light_diffuse,  0);
+		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, light_position, 0);
+		gl.glEnable(GL2.GL_COLOR_MATERIAL);
+		gl.glEnable(GL2.GL_LIGHTING);
+		gl.glEnable(GL2.GL_LIGHT0);
 	}
 
 	@Override
