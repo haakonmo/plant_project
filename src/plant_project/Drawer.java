@@ -2,19 +2,15 @@ package plant_project;
 
 import java.awt.Color;
 import java.awt.Frame;
-
 import java.awt.event.WindowAdapter;
-
 import java.awt.event.WindowEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.MouseMotionListener;
-
 import java.util.ArrayList;
 
 import javax.media.opengl.GL;
@@ -32,14 +28,15 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		MouseListener, MouseWheelListener, MouseMotionListener,
 		GLEventListener {
 
-	private final static char NOTHING = 'X';
-	private final static char GROW    = 'F';
-	private final static char NORTH   = 'n';
-	private final static char EAST    = 'e';
-	private final static char WEST    = 'w';
-	private final static char SOUTH   = 's';
-	private final static char PUSH    = '[';
-	private final static char POP     = ']';
+	private final static char NOTHING 		= 'X';
+	private final static char GROW    		= 'F';
+	private final static char GROW_FlOWER	= 'L';
+	private final static char NORTH   		= 'n';
+	private final static char EAST    		= 'e';
+	private final static char WEST    		= 'w';
+	private final static char SOUTH   		= 's';
+	private final static char PUSH    		= '[';
+	private final static char POP     		= ']';
 
 	public final static float NORTH_BOUND =  4.0f;
 	public final static float EAST_BOUND  =  4.0f;
@@ -103,6 +100,7 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		String lString = plant.getlString();
 		gl.glPushMatrix();
 		Color stemColor = plant.getGene().getStemColor();
+		Color flowerColor = plant.getGene().getFlowerColor();
 		gl.glColor3f(stemColor.getRed()   / 255.0f,
 		             stemColor.getGreen() / 255.0f,
 		             stemColor.getBlue()  / 255.0f);
@@ -120,6 +118,26 @@ public class Drawer extends WindowAdapter implements KeyListener,
 				float lineLength = 0.1f;
 				drawLine(gl, 0, 0, 0, lineLength);
 				gl.glTranslatef(0, lineLength, 0.0f);
+				break;
+			case GROW_FlOWER:
+				if (plant.getAge() >= Plant.MAX_ITERATION)
+				{
+					gl.glColor3f(flowerColor.getRed()   / 255.0f,
+								 flowerColor.getGreen() / 255.0f,
+								 flowerColor.getBlue()  / 255.0f);
+					// drawSphere / flower
+					gl.glBegin(GL2.GL_QUADS);
+					gl.glColor3f(0.3f, 0.2f, 0.2f); // set the color of the ground
+					gl.glVertex3f(0.05f, 0.0f, 0.05f);
+					gl.glVertex3f(-0.05f, 0.0f, 0.05f);
+					gl.glVertex3f(-0.05f, 0.0f, -0.05f);
+					gl.glVertex3f(0.05f, 0.0f, -0.05f);
+					gl.glEnd();
+					
+					gl.glColor3f(stemColor.getRed()   / 255.0f,
+								 stemColor.getGreen() / 255.0f,
+								 stemColor.getBlue()  / 255.0f);
+				}
 				break;
 			case PUSH:
 				// push position and angle

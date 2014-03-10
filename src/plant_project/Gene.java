@@ -3,7 +3,7 @@ package plant_project;
 import java.awt.Color;
 
 public class Gene {
-	private static final String[] MUTATIONS = new String[] {"F[XXnF]", "[sF]", "F[nXwX]", "sF"};
+	private static final String[] MUTATIONS = new String[] {"F[XXnFL]", "[sF]", "F[nXwXL]", "sF"};
 	private int angle;
 	private String[] rules;
 	private Color stemColor;

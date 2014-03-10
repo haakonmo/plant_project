@@ -120,10 +120,10 @@ public class Main {
 		this.drawer = new Drawer(this);
 
 		plants.add(new Plant(0, 0, new Gene(15, new String[] {
-			"Fn[[X]sX]eF[sFX]X", "FF" }, new Color(0.0f, 0.8f, 0.2f),
+			"Fn[[X]sXL]eF[sFX]X", "FF" }, new Color(0.0f, 0.8f, 0.2f),
 			Color.BLUE, 2, Plant.MAX_ITERATION)));
 		plants.add(new Plant(1, 0, new Gene(15, new String[] {
-			"Fs[[F]eX]nF[wFX]F", "FF" }, new Color(0.2f, 0.9f, 0.0f),
+			"Fs[[FL]eX]nF[wFXL]F", "FF" }, new Color(0.2f, 0.9f, 0.0f),
 			Color.BLUE, 2, Plant.MAX_ITERATION)));
 
 		System.out.format("%-16s %3d%% (s=?)\n", "Sun:", sun);
