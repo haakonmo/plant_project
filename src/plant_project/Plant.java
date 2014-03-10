@@ -1,10 +1,12 @@
 package plant_project;
 
 import java.util.ArrayList;
+import plant_project.LSystem;
 
 public class Plant {
-	public static final int MAX_ITERATION = 5;
-	public static final int MAX_AGE = 7;
+	public static final int MINUMUM_ITERATION = 4;
+	public static final int MAX_ITERATION = 7;
+	public static final int MAX_AGE = 8;
 	public static final float MAX_REPRODUCTION_RADIUS = 2;
 
 	private float x, y;
@@ -45,7 +47,8 @@ public class Plant {
 	 */
 	public ArrayList<Plant> grow() {
 		ArrayList<Plant> children = new ArrayList<Plant>();
-		if (++age < MAX_ITERATION) {
+		++age;
+		if (MINUMUM_ITERATION <= age && age <= MAX_ITERATION) {
 			lString = LSystem.iterate(lString, gene.getRules());
 		}
 		if (age == gene.getMaturityAge()) {

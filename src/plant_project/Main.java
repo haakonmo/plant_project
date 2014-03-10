@@ -89,11 +89,20 @@ public class Main {
 					else {
 						// plant reproduces
 						en = plant.getlString().length();
-						if (n >= en) {
-							n -= plant.getlString().length();
-							newPlants.addAll(plant.grow());
-						} else
-							newPlants.remove(plant);
+						if (n <= en) {
+							//Delete random plants
+							System.out.println("Deleted plant");
+							int mod = (int)(Math.random()*5);
+							for (int i=0; i < newPlants.size(); i++){
+								if (mod>2 && (i%mod)== 0){
+									Plant p = newPlants.get(i);
+									n += p.getlString().length();
+									newPlants.remove(i);
+								}
+							}
+						}
+						n -= plant.getlString().length();
+						newPlants.addAll(plant.grow());
 					}
 				}
 				plants = newPlants;
