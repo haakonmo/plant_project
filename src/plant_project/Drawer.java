@@ -101,11 +101,23 @@ public class Drawer extends WindowAdapter implements KeyListener,
 	}
 
 	private void drawStem(GL2 gl, Color color, float length) {
+		final int   sides  = 3;
+		final float radius = length/30f;
+
 		gl.glColor3ub((byte)color.getRed(),
 			      (byte)color.getGreen(),
 			      (byte)color.getBlue());
 
-		drawLine(gl, 0, 0, 0, length);
+		gl.glBegin(GL2.GL_QUAD_STRIP);
+		for (int i = 0; i <= sides; i++) {
+			float a  = (float)Math.PI * 2f / sides * i;
+			float nx = (float)Math.sin(a);
+			float nz = (float)Math.cos(a);
+			gl.glNormal3f(nx,        0,      nz);
+			gl.glVertex3f(nx*radius, 0,      nz*radius);
+			gl.glVertex3f(nx*radius, length, nz*radius);
+		}
+		gl.glEnd();
 	}
 
 	private void drawFlower(GL2 gl, Color color) {
@@ -122,7 +134,7 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		gl.glNormal3f(0f, -1f, 0f);
 		gl.glVertex3f(0f,  0f, 0f);
 		for (int i = 0; i <= pedals; i++) {
-			float a  = (float)((2f*Math.PI) / pedals)*i;
+			float a  = (float)Math.PI * 2f / pedals * i;
 			float x  = (float)Math.sin(a) * radius;
 			float z  = (float)Math.cos(a) * radius;
 
@@ -203,7 +215,7 @@ public class Drawer extends WindowAdapter implements KeyListener,
 
 	private void drawGround(GL2 gl) {
 		gl.glBegin(GL2.GL_QUADS);
-		gl.glColor3f(0.4f, 0.3f, 0.2f); // set the color of the ground
+		gl.glColor3f(0.17f, 0.12f, 0.10f); // set the color of the ground
 		gl.glNormal3f(0f, 1f, 0f);
 		gl.glVertex3f(WEST_BOUND, 0.0f, NORTH_BOUND);
 		gl.glVertex3f(EAST_BOUND, 0.0f, NORTH_BOUND);
@@ -472,8 +484,8 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		gl.glPushMatrix();
 		gl.glLoadIdentity();
 		float light_ambient[]  = {0.4f, 0.4f, 0.4f, 1.0f};
-		float light_diffuse[]  = {0.6f, 0.6f, 0.8f, 1.0f};
-		float light_position[] = {-40.0f, 80.0f, 40.0f, 1.0f};
+		float light_diffuse[]  = {1.0f, 1.0f, 1.0f, 1.0f};
+		float light_position[] = {-400.0f, 800.0f, 400.0f, 1.0f};
 		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT,  light_ambient,  0);
 		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE,  light_diffuse,  0);
 		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, light_position, 0);
