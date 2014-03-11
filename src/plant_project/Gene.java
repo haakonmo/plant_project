@@ -52,6 +52,7 @@ public class Gene {
 	 * mutation probability {@code Main.mutation}
 	 */
 	public Gene clone() {
+		
 		int i = (int) (Math.random() * 100);
 		if (i > 0 && i <= Main.mutation) {
 			// TODO mutate

@@ -1,6 +1,7 @@
 package plant_project;
 
 import java.util.ArrayList;
+
 import plant_project.LSystem;
 
 public class Plant {
@@ -46,6 +47,16 @@ public class Plant {
 	 * @return seeds
 	 */
 	public ArrayList<Plant> grow() {
+		//Sun
+		//plants try to adapt and becomes smaller by 100% - sun (e.g. sun=65% --> 35% smaller)
+		int s = Main.sun;
+		shrinklString(s);
+		
+		//Water
+		//plants try to adapt and becomes smaller by 100% - water (e.g. water=65% --> 35% smaller)
+		int w = Main.water;
+		shrinklString(w);
+		
 		ArrayList<Plant> children = new ArrayList<Plant>();
 		++age;
 		if (MINUMUM_ITERATION <= age && age <= MAX_ITERATION) {
@@ -60,5 +71,27 @@ public class Plant {
 			}
 		}
 		return children;
+	}
+	
+	private void shrinklString(int percentToShrink){
+		String templString = lString;
+		if (percentToShrink != 100){
+			float percentageToDelete = (100.0f-percentToShrink)/100.0f;
+			int numberOfCharDeleted = 0;
+			for (int i = 0; i < templString.length(); i++) {
+				char c = templString.charAt(i);
+				if (c == 'F'){
+					double random = Math.random();
+					boolean delete = random < Math.sqrt(percentageToDelete); 
+					if (delete){
+						int index = i-numberOfCharDeleted;
+						if (index!=0 && index!=lString.length()){
+							lString = lString.substring(0,index)+lString.substring(index+1, lString.length());
+							numberOfCharDeleted++;
+						}
+					}
+				}
+			}
+		}
 	}
 }

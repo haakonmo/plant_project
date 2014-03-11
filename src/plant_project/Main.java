@@ -84,10 +84,12 @@ public class Main {
 				int en;
 				for (Plant plant : plants) {
 					// plant dies
-					if (plant.getAge() >= plant.MAX_AGE)
+					if (plant.getAge() >= Plant.MAX_AGE)
 						newPlants.remove(plant);
 					else {
 						// plant reproduces
+						
+						// if there's not enough nutrition, some plants die.
 						en = plant.getlString().length();
 						if (n <= en) {
 							//Delete random plants
