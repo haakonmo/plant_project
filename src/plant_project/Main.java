@@ -24,7 +24,7 @@ public class Main {
 	/**
 	 * Soil nutrition
 	 */
-	public static int nutrition = 100;
+	public static int nutrition = 10000;
 
 	/**
 	 * Plants in world
@@ -93,7 +93,7 @@ public class Main {
 						en = plant.getlString().length();
 						if (n <= en) {
 							//Delete random plants
-							System.out.println("Deleted plant");
+							//System.out.println("Deleted plant");
 							int mod = (int)(Math.random()*5);
 							for (int i=0; i < newPlants.size(); i++){
 								if (mod>2 && (i%mod)== 0){
@@ -108,7 +108,7 @@ public class Main {
 					}
 				}
 				plants = newPlants;
-				System.out.println("tick");
+				//System.out.println("tick");
 				drawer.draw(plants);
 				break;
 		}
@@ -120,18 +120,6 @@ public class Main {
 	public Main() {
 		this.plants = new ArrayList<Plant>();
 		this.drawer = new Drawer(this);
-
-		plants.add(new Plant(0, 0, new Gene(15,
-			new String[] { "Fn[[X]sXL]eF[sFX]X", "FF" },
-			new Color(0.0f, 0.8f, 0.2f),
-			new Color(0.3f, 0.3f, 0.8f),
-			2, Plant.MAX_ITERATION)));
-
-		plants.add(new Plant(1, 0, new Gene(15,
-			new String[] { "Fs[[FL]eX]nF[wFXL]F", "FF" },
-			new Color(0.2f, 0.9f, 0.9f),
-			new Color(0.8f, 0.3f, 0.3f),
-			2, Plant.MAX_ITERATION)));
 
 		System.out.format("%-16s %3d%% (s=?)\n", "Sun:", sun);
 		System.out.format("%-16s %3d%% (w=?)\n", "Water:", water);

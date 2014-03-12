@@ -2,15 +2,15 @@ package plant_project;
 
 import java.awt.Color;
 import java.awt.Frame;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseWheelListener;
-import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
 import javax.media.opengl.GL;
@@ -18,13 +18,15 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GL2ES1;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
-import javax.media.opengl.glu.GLU;
-import javax.media.opengl.glu.GLUquadric;
 import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.fixedfunc.GLLightingFunc;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
+import javax.media.opengl.glu.GLU;
+import javax.media.opengl.glu.GLUquadric;
 
+import com.google.common.base.CharMatcher;
 import com.jogamp.opengl.util.Animator;
+import com.sun.xml.internal.ws.util.StringUtils;
 
 public class Drawer extends WindowAdapter implements KeyListener,
 		MouseListener, MouseWheelListener, MouseMotionListener,
@@ -180,6 +182,7 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		// move to plant origin
 		gl.glTranslatef(plant.getX(), 0.0f, plant.getY());
 		
+		int fCount = CharMatcher.is('F').countIn(lString);
 		float step 		= 0.3f;
 		float stemLevel = 1.0f;
 		for (int i = 0; i < lString.length(); i++) {
@@ -191,7 +194,7 @@ public class Drawer extends WindowAdapter implements KeyListener,
 			case GROW:
 				// drawLine
 				float lineLength 	= 0.1f;
-				float radius 		= (stemLevel * lString.length()/(float)Math.sqrt(lString.length()))/3000;
+				float radius 		=  stemLevel * (fCount/(float)Math.sqrt(fCount))/2000;
 				this.drawStem(gl, stemColor, lineLength, radius);
 				gl.glTranslatef(0, lineLength, 0.0f);
 				break;

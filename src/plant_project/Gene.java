@@ -3,7 +3,9 @@ package plant_project;
 import java.awt.Color;
 
 public class Gene {
-	private static final String[] MUTATIONS = new String[] {"F[XXnFL]", "[sF]", "F[nXwXL]", "sF"};
+	private static final char[] ORIENTATIONS = new char[] { 'n', 's', 'e', 'w' };
+	private static final String[] MUTATIONS = new String[] { "F", "L", "xF",
+		"xL", "xX", "[X]", "[F]", "[L]", "[xF]", "[xL]" };
 	private int angle;
 	private String[] rules;
 	private Color stemColor;
@@ -31,7 +33,7 @@ public class Gene {
 	public int getReproductionCount() {
 		return reproductionCount;
 	}
-	
+
 	public int getMaturityAge() {
 		return maturityAge;
 	}
@@ -52,28 +54,87 @@ public class Gene {
 	 * mutation probability {@code Main.mutation}
 	 */
 	public Gene clone() {
-		
+
 		int i = (int) (Math.random() * 100);
+		// MUTATION
 		if (i > 0 && i <= Main.mutation) {
-			// TODO mutate
-			System.out.println("Mutation happened");
-			String mutation = MUTATIONS[(int)(Math.random()*MUTATIONS.length)];
-			int index 		= (int)(Math.random()*this.rules.length);
-			String rule 	= rules[index];
-			int ruleIndex	= (int)(Math.random()*rule.length());
-			char c 			= rule.charAt(ruleIndex);
-			while (c == '[' || c == ']'){
-				ruleIndex	= (int)(Math.random()*rule.length());
-				c 			= rule.charAt(ruleIndex);
-			}
-			rule 			= rule.substring(0,ruleIndex)+mutation+rule.substring(ruleIndex+1, rule.length());
-			String[] newRules 	= rules;
-			newRules[index] 	= rule;
-			Color newStemColor 	= new Color((float)Math.random(), (float)Math.random(), (float)Math.random());
-			Color newFlowerColor = new Color((float)Math.random(), (float)Math.random(), (float)Math.random());
-			return new Gene(angle, newRules, newStemColor, newFlowerColor, reproductionCount, maturityAge);
-		}else{
-			return new Gene(angle, rules, stemColor, flowerColor, reproductionCount, maturityAge);
+			String[] newRules = rules.clone();
+			// pick random rule to mutate
+			int mutationRuleIndex = (int) (Math.random() * (newRules.length - 1));
+			newRules[mutationRuleIndex] = mutate(newRules[mutationRuleIndex]);
+			System.out.println(rules[mutationRuleIndex]);
+			System.out.println(newRules[mutationRuleIndex]);
+			Color stemColor = new Color((float) Math.random(),
+					(float) Math.random(), (float) Math.random());
+			Color flowerColor = new Color((float) Math.random(),
+					(float) Math.random(), (float) Math.random());
+			return new Gene(angle, newRules, stemColor, flowerColor,
+					reproductionCount, maturityAge);
+		} else {
+			// NO MUTATION
+			return new Gene(angle, rules, stemColor, flowerColor,
+					reproductionCount, maturityAge);
 		}
+	}
+
+	public static final int ADD = 1;
+	public static final int DELETE = 0;
+
+	private String mutate(String lString) {
+		// SWAP ADD or DELETE
+		final int type = (int) (Math.random()*2);
+		System.out.println(type);
+		int index = (int) (Math.random() * (lString.length() - 1));
+		String mutation = MUTATIONS[(int) (Math.random() * (MUTATIONS.length - 1))];
+		switch (type) {
+		case ADD:
+			lString = lString.substring(0, index) + mutation
+					+ lString.substring(index);
+			break;
+		case DELETE:
+			char c = lString.charAt(index);
+			if (c == '[' || c == ']') {
+				break;
+//				// delete one sequence, i.e. [....]
+//				int indexEnd = index;
+//				int parantheses = 0;
+//				while (c != ']' && parantheses > 0) {
+//					if(c == '[')
+//						parantheses++;
+//					else if(c == ']')
+//						parantheses--;
+//					c = lString.charAt(++indexEnd);
+//				}
+//				if (indexEnd == lString.length() - 1)
+//					lString = lString.substring(0, index);
+//				else
+//					lString = lString.substring(0, index)
+//							+ lString.substring(indexEnd + 1);
+//			} else if (c != ']') {
+//				int indexStart = index;
+//				int parantheses = 0;
+//				while (c != '[') {
+//					if(c == ']')
+//						parantheses++;
+//					else if(c == '[')
+//						parantheses--;
+//					c = lString.charAt(--indexStart);
+//				}
+//				if (index == lString.length() - 1)
+//					lString = lString.substring(0, indexStart);
+//				else
+//					lString = lString.substring(0, indexStart)
+//							+ lString.substring(index + 1);
+			} else {
+				if (index == lString.length() - 1)
+					lString = lString.substring(0, index);
+				else
+					lString = lString.substring(0, index)
+							+ lString.substring(index + 1);
+			}
+			break;
+		}
+		return lString.replace("x", String.valueOf(ORIENTATIONS[(int) (Math
+				.random() * (ORIENTATIONS.length - 1))]));
 	}
 }
