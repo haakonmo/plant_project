@@ -100,9 +100,8 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		gl.glEnd();
 	}
 
-	private void drawStem(GL2 gl, Color color, float length) {
+	private void drawStem(GL2 gl, Color color, float length, float radius) {
 		final int   sides  = 3;
-		final float radius = length/30f;
 
 		gl.glColor3ub((byte)color.getRed(),
 			      (byte)color.getGreen(),
@@ -180,6 +179,9 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		gl.glPushMatrix();
 		// move to plant origin
 		gl.glTranslatef(plant.getX(), 0.0f, plant.getY());
+		
+		float step 		= 0.3f;
+		float stemLevel = 1.0f;
 		for (int i = 0; i < lString.length(); i++) {
 			char c = lString.charAt(i);
 			switch (c) {
@@ -188,8 +190,9 @@ public class Drawer extends WindowAdapter implements KeyListener,
 				break;
 			case GROW:
 				// drawLine
-				float lineLength = 0.1f;
-				this.drawStem(gl, stemColor, lineLength);
+				float lineLength 	= 0.1f;
+				float radius 		= (stemLevel * lString.length()/(float)Math.sqrt(lString.length()))/3000;
+				this.drawStem(gl, stemColor, lineLength, radius);
 				gl.glTranslatef(0, lineLength, 0.0f);
 				break;
 			case GROW_FlOWER:
@@ -198,10 +201,14 @@ public class Drawer extends WindowAdapter implements KeyListener,
 				break;
 			case PUSH:
 				// push position and angle
+				if (stemLevel - step >= 0.1f)
+					stemLevel-= step;
 				gl.glPushMatrix();
 				break;
 			case POP:
 				// pop position and angle
+				if (stemLevel + step <= 1.0f)
+					stemLevel+= step;
 				gl.glPopMatrix();
 				break;
 			case NORTH:

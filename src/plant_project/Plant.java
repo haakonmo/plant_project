@@ -91,6 +91,17 @@ public class Plant {
 						}
 					}
 				}
+				if (c == 'L'){
+					double random = Math.random();
+					boolean delete = random < Math.sqrt(percentageToDelete); 
+					if (delete){
+						int index = i-numberOfCharDeleted;
+						if (index!=0 && index!=lString.length()){
+							lString = lString.substring(0,index)+lString.substring(index+1, lString.length());
+							numberOfCharDeleted++;
+						}
+					}
+				}
 			}
 		}
 	}
