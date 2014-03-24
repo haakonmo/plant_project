@@ -42,19 +42,26 @@ public class Main {
 	public void keyPress(char c, String in)
 	{
 		switch (c) {
-			case 'p':// plant p=(rules seperated by ,), reproducecount,
-				// maturityage
+			case 'p':
+				// plant p=(probability:find:replace; ...), reproducecount, maturityage
 				if (in.length() < 3) {
-					plants.add(new Plant(1, 0, new Gene(15, new String[] {
-						"Fs[[F]eX]nF[wFX]F", "FF" }, new Color(0.2f, 0.9f,
-							0.0f), Color.BLUE, 2, Plant.MAX_ITERATION)));
+					plants.add(new Plant(1, 0, new Gene(15,
+						new LRule[] { new LRule(0.5, 'X', "Gs[[G]eX]nG[wGX]G"),
+						              new LRule(0.5, 'G', "GG") },
+						new Color(0.2f, 0.9f, 0.0f),
+						Color.BLUE,
+						2, Plant.MAX_ITERATION)));
 				} else {
 					String[] plantElements = in.split("=")[1].split(";");
-					String[] rules = plantElements[0].substring(1,
-							plantElements[0].length() - 2).split(",");
-					plants.add(new Plant(0, 0, new Gene(15, rules, Color.GREEN,
-									Color.BLUE, Integer.parseInt(plantElements[1]),
-									Integer.parseInt(plantElements[2]))));
+					String[] ruleStrings = plantElements[0].substring(1,
+							plantElements[0].length()-2).split(",");
+					LRule rules[] = new LRule[ruleStrings.length];
+					for (int i = 0; i < ruleStrings.length; i++)
+						rules[i] = new LRule(ruleStrings[i]);
+					plants.add(new Plant(0, 0, new Gene(15,
+						rules, Color.GREEN, Color.BLUE,
+						Integer.parseInt(plantElements[1]),
+						Integer.parseInt(plantElements[2]))));
 				}
 				System.out.println("planted in 0, 0!");
 				break;
@@ -121,19 +128,27 @@ public class Main {
 		this.plants = new ArrayList<Plant>();
 		this.drawer = new Drawer(this);
 
-		/*
-		plants.add(new Plant(0, 0, new Gene(15,
-			new String[] { "Fn[[X]sXL]eF[sFX]X", "FF" },
-			new Color(0.0f, 0.8f, 0.2f),
-			new Color(0.3f, 0.3f, 0.8f),
-			2, Plant.MAX_ITERATION)));
+		/* Wikipedia example L-System */
+		//plants.add(new Plant(0, 0, new Gene(15,
+		//	new LRule[] { new LRule(1, 'X', "Gn[[X]sX]sG[sGX]nX"),
+		//	              new LRule(1, 'G', "GG") },
+		//	new Color(0.0f, 0.8f, 0.2f),
+		//	new Color(0.3f, 0.3f, 0.8f),
+		//	2, Plant.MAX_ITERATION)));
 
-		plants.add(new Plant(1, 0, new Gene(15,
-			new String[] { "Fs[[FL]eX]nF[wFXL]F", "FF" },
-			new Color(0.2f, 0.9f, 0.9f),
-			new Color(0.8f, 0.3f, 0.3f),
-			2, Plant.MAX_ITERATION)));
-		*/
+		//plants.add(new Plant(0, 0, new Gene(15,
+		//	new LRule[] { new LRule(0.75, 'X', "Gn[[X]sXF]eG[sGX]X"),
+		//	              new LRule(0.75, 'G', "GG") },
+		//	new Color(0.0f, 0.8f, 0.2f),
+		//	new Color(0.3f, 0.3f, 0.8f),
+		//	2, Plant.MAX_ITERATION)));
+
+		//plants.add(new Plant(1, 0, new Gene(15,
+		//	new LRule[] { new LRule(0.75, 'X', "Gs[[GF]eX]nG[wGXF]G"),
+		//	              new LRule(0.75, 'G', "GG") },
+		//	new Color(0.2f, 0.9f, 0.9f),
+		//	new Color(0.8f, 0.3f, 0.3f),
+		//	2, Plant.MAX_ITERATION)));
 
 		System.out.format("%-16s %3d%% (s=?)\n", "Sun:", sun);
 		System.out.format("%-16s %3d%% (w=?)\n", "Water:", water);

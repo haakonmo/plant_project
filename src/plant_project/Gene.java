@@ -3,11 +3,16 @@ package plant_project;
 import java.awt.Color;
 
 public class Gene {
-	private static final char[] ORIENTATIONS = new char[] { 'n', 's', 'e', 'w' };
-	private static final String[] MUTATIONS = new String[] { "F", "L", "xF",
-		"xL", "xX", "[X]", "[F]", "[L]", "[xF]", "[xL]" };
+	private static final char[] ORIENTATIONS = new char[] {
+		'n', 's', 'e', 'w'
+	};
+	private static final String[] MUTATIONS = new String[] {
+		"G", "xG", "[G]", "[xG]",
+		"F", "xF", "[F]", "[xF]",
+		"[X]", "xX",
+	};
 	private int angle;
-	private String[] rules;
+	private LRule[] rules;
 	private Color stemColor;
 	private Color flowerColor;
 
@@ -18,7 +23,7 @@ public class Gene {
 		return angle;
 	}
 
-	public String[] getRules() {
+	public LRule[] getRules() {
 		return rules;
 	}
 
@@ -38,7 +43,7 @@ public class Gene {
 		return maturityAge;
 	}
 
-	public Gene(int angle, String[] rules, Color stemColor, Color flowerColor,
+	public Gene(int angle, LRule[] rules, Color stemColor, Color flowerColor,
 			int reproductionCount, int maturityAge) {
 		super();
 		this.angle = angle;
@@ -58,12 +63,12 @@ public class Gene {
 		int i = (int) (Math.random() * 100);
 		// MUTATION
 		if (i > 0 && i <= Main.mutation) {
-			String[] newRules = rules.clone();
+			LRule[] newRules = rules.clone();
 			// pick random rule to mutate
 			int mutationRuleIndex = (int) (Math.random() * (newRules.length - 1));
 			newRules[mutationRuleIndex] = mutate(newRules[mutationRuleIndex]);
-			System.out.println(rules[mutationRuleIndex]);
-			System.out.println(newRules[mutationRuleIndex]);
+			System.out.println("old: " + rules[mutationRuleIndex]);
+			System.out.println("new: " + newRules[mutationRuleIndex]);
 			Color stemColor = new Color((float) Math.random(),
 					(float) Math.random(), (float) Math.random());
 			Color flowerColor = new Color((float) Math.random(),
@@ -80,8 +85,9 @@ public class Gene {
 	public static final int ADD = 1;
 	public static final int DELETE = 0;
 
-	private String mutate(String lString) {
+	private LRule mutate(LRule rule) {
 		// SWAP ADD or DELETE
+		String lString = rule.replace;
 		final int type = (int) (Math.random()*2);
 		System.out.println(type);
 		int index = (int) (Math.random() * (lString.length() - 1));
@@ -134,7 +140,8 @@ public class Gene {
 			}
 			break;
 		}
-		return lString.replace("x", String.valueOf(ORIENTATIONS[(int) (Math
-				.random() * (ORIENTATIONS.length - 1))]));
+		String replace = lString.replace("x", String.valueOf(ORIENTATIONS[(int) (Math
+						.random() * (ORIENTATIONS.length - 1))]));
+		return new LRule(rule.prob, rule.find, replace);
 	}
 }

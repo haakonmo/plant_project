@@ -32,16 +32,6 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		MouseListener, MouseWheelListener, MouseMotionListener,
 		GLEventListener {
 
-	private final static char NOTHING     = 'X';
-	private final static char GROW        = 'F';
-	private final static char GROW_FlOWER = 'L';
-	private final static char NORTH       = 'n';
-	private final static char EAST        = 'e';
-	private final static char WEST        = 'w';
-	private final static char SOUTH       = 's';
-	private final static char PUSH        = '[';
-	private final static char POP         = ']';
-
 	public final static float NORTH_BOUND =  4.0f;
 	public final static float EAST_BOUND  =  4.0f;
 	public final static float WEST_BOUND  = -4.0f;
@@ -182,58 +172,82 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		// move to plant origin
 		gl.glTranslatef(plant.getX(), 0.0f, plant.getY());
 		
-		int fCount = CharMatcher.is('F').countIn(lString);
+		int fCount = CharMatcher.is(LSystem.GROW).countIn(lString);
 		float step 		= 0.3f;
 		float stemLevel = 1.0f;
 		for (int i = 0; i < lString.length(); i++) {
 			char c = lString.charAt(i);
 			switch (c) {
-			case NOTHING:
+			case LSystem.NOTHING:
 				// do nothing
 				break;
-			case GROW:
+			case LSystem.GROW:
 				// drawLine
-				float lineLength 	= 0.1f;
-				float radius 		=  stemLevel * (fCount/(float)Math.sqrt(fCount))/2000;
+				float lineLength = 0.1f;
+				float radius     = stemLevel * (fCount/(float)Math.sqrt(fCount))/2000;
 				this.drawStem(gl, stemColor, lineLength, radius);
 				gl.glTranslatef(0, lineLength, 0.0f);
 				break;
-			case GROW_FlOWER:
+			case LSystem.FLOWER:
 				if (plant.getAge() >= Plant.MAX_ITERATION)
 					this.drawFlower(gl, flowerColor);
 				break;
-			case PUSH:
+			case LSystem.PUSH:
 				// push position and angle
 				if (stemLevel - step >= 0.1f)
 					stemLevel-= step;
 				gl.glPushMatrix();
 				break;
-			case POP:
+			case LSystem.POP:
 				// pop position and angle
 				if (stemLevel + step <= 1.0f)
 					stemLevel+= step;
 				gl.glPopMatrix();
 				break;
-			case NORTH:
+
+			/* This spreads out the plants stems because 
+			 * it leaves the coordinate system rotated */
+			case LSystem.NORTH:
 				// rotate against north, Z
 				gl.glRotatef(plant.getGene().getAngle(), 0.0f, 0.0f, 1.0f);
 				gl.glRotatef(0, 0.0f, 1.0f, 0.0f);
 				break;
-			case EAST:
+			case LSystem.EAST:
 				// rotate against east, X
 				gl.glRotatef(plant.getGene().getAngle(), 0.0f, 0.0f, 1.0f);
 				gl.glRotatef(90, 0.0f, 1.0f, 0.0f);
 				break;
-			case WEST:
+			case LSystem.WEST:
 				// rotate against west, -X
 				gl.glRotatef(plant.getGene().getAngle(), 0.0f, 0.0f, 1.0f);
 				gl.glRotatef(180, 0.0f, 1.0f, 0.0f);
 				break;
-			case SOUTH:
+			case LSystem.SOUTH:
 				// rotate against south, -Z
 				gl.glRotatef(plant.getGene().getAngle(), 0.0f, 0.0f, 1.0f);
 				gl.glRotatef(270, 0.0f, 1.0f, 0.0f);
 				break;
+
+			/* This is more accurate,
+			 * but it makes our plants look ugly :(
+			case LSystem.NORTH:
+				// rotate against north, Z
+				gl.glRotatef(plant.getGene().getAngle(), 0.0f, 0.0f, 1.0f);
+				break;
+			case LSystem.EAST:
+				// rotate against east, X
+				gl.glRotatef(plant.getGene().getAngle(), 1.0f, 0.0f, 0.0f);
+				break;
+			case LSystem.WEST:
+				// rotate against west, -X
+				gl.glRotatef(plant.getGene().getAngle(), -1.0f, 0.0f, 0.0f);
+				break;
+			case LSystem.SOUTH:
+				// rotate against south, -Z
+				gl.glRotatef(plant.getGene().getAngle(), 0.0f, 0.0f, -1.0f);
+				break;
+			*/
+
 			default:
 				break;
 			}
