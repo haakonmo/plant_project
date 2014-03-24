@@ -1,6 +1,9 @@
 *~
+*.jar
+*.swp
 config.mk
 bin/
 lib/
 obj/
+jar/
 target/
