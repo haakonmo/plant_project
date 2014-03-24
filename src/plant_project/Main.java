@@ -50,7 +50,8 @@ public class Main {
 						              new LRule(0.5, 'G', "GG") },
 						new Color(0.2f, 0.9f, 0.0f),
 						Color.BLUE,
-						2, Plant.MAX_ITERATION)));
+						2, Plant.MAX_ITERATION,
+						0.01f, 0.1f)));
 				} else {
 					String[] plantElements = in.split("=")[1].split(";");
 					String[] ruleStrings = plantElements[0].substring(1,
@@ -61,7 +62,8 @@ public class Main {
 					plants.add(new Plant(0, 0, new Gene(15,
 						rules, Color.GREEN, Color.BLUE,
 						Integer.parseInt(plantElements[1]),
-						Integer.parseInt(plantElements[2]))));
+						Integer.parseInt(plantElements[2]),
+						0.01f, 0.1f)));
 				}
 				System.out.println("planted in 0, 0!");
 				break;
@@ -136,19 +138,19 @@ public class Main {
 		//	new Color(0.3f, 0.3f, 0.8f),
 		//	2, Plant.MAX_ITERATION)));
 
-		//plants.add(new Plant(0, 0, new Gene(15,
-		//	new LRule[] { new LRule(0.75, 'X', "Gn[[X]sXF]eG[sGX]X"),
-		//	              new LRule(0.75, 'G', "GG") },
-		//	new Color(0.0f, 0.8f, 0.2f),
-		//	new Color(0.3f, 0.3f, 0.8f),
-		//	2, Plant.MAX_ITERATION)));
+		plants.add(new Plant(0, 0, new Gene(15,
+			new LRule[] { new LRule(0.75, 'X', "Gn[[X]sXL]eG[sGXF]X"),
+			              new LRule(0.75, 'G', "GG") },
+			new Color(0.0f, 0.8f, 0.2f),
+			new Color(0.3f, 0.3f, 0.8f),
+			2, Plant.MAX_ITERATION, 0.01f, 0.1f)));
 
-		//plants.add(new Plant(1, 0, new Gene(15,
-		//	new LRule[] { new LRule(0.75, 'X', "Gs[[GF]eX]nG[wGXF]G"),
-		//	              new LRule(0.75, 'G', "GG") },
-		//	new Color(0.2f, 0.9f, 0.9f),
-		//	new Color(0.8f, 0.3f, 0.3f),
-		//	2, Plant.MAX_ITERATION)));
+		plants.add(new Plant(1, 0, new Gene(15,
+			new LRule[] { new LRule(0.75, 'X', "Gs[[GL]eX]nG[wGXL]G"),
+			              new LRule(0.75, 'G', "GG") },
+			new Color(0.2f, 0.9f, 0.9f),
+			new Color(0.8f, 0.3f, 0.3f),
+			2, Plant.MAX_ITERATION, 0.01f, 0.1f)));
 
 		System.out.format("%-16s %3d%% (s=?)\n", "Sun:", sun);
 		System.out.format("%-16s %3d%% (w=?)\n", "Water:", water);

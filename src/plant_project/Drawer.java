@@ -111,6 +111,23 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		gl.glEnd();
 	}
 
+	private void drawLeaf(GL2 gl, Color color, float size) {
+		// Draw stemp vertex
+		gl.glColor3ub((byte)color.getRed(),
+			      (byte)color.getGreen(),
+			      (byte)color.getBlue());
+		gl.glBegin(GL2.GL_TRIANGLE_FAN);
+
+		gl.glNormal3f( 0.0f, 0.5f, 0.0f); gl.glVertex3f(0.0f, 0.0f, 0.0f);
+		gl.glNormal3f( 0.3f, 0.0f, 0.0f); gl.glVertex3f(-0.5f*size, 0.2f*size,  0.5f*size);
+		gl.glNormal3f( 0.2f, 0.1f, 0.0f); gl.glVertex3f(-0.4f*size, 0.1f*size,  0.8f*size);
+		gl.glNormal3f( 0.0f, 0.5f, 0.0f); gl.glVertex3f( 0.0f*size, 0.0f*size,  1.0f*size);
+		gl.glNormal3f(-0.3f, 0.1f, 0.0f); gl.glVertex3f( 0.4f*size, 0.1f*size,  0.8f*size);
+		gl.glNormal3f(-0.3f, 0.0f, 0.0f); gl.glVertex3f( 0.5f*size, 0.2f*size,  0.5f*size);
+
+		gl.glEnd();
+	}
+
 	private void drawPedals(GL2 gl, Color color,
 			int pedals, float length, float radius, float norm) {
 
@@ -167,13 +184,15 @@ public class Drawer extends WindowAdapter implements KeyListener,
 
 		Color stemColor   = plant.getGene().getStemColor();
 		Color flowerColor = plant.getGene().getFlowerColor();
+		float stemWidth   = plant.getGene().getStemWidth();
+		float leafSize    = plant.getGene().getLeafSize();
 
 		gl.glPushMatrix();
 		// move to plant origin
 		gl.glTranslatef(plant.getX(), 0.0f, plant.getY());
 		
 		int fCount = CharMatcher.is(LSystem.GROW).countIn(lString);
-		float step 		= 0.3f;
+		float step      = 0.3f;
 		float stemLevel = 1.0f;
 		for (int i = 0; i < lString.length(); i++) {
 			char c = lString.charAt(i);
@@ -184,9 +203,13 @@ public class Drawer extends WindowAdapter implements KeyListener,
 			case LSystem.GROW:
 				// drawLine
 				float lineLength = 0.1f;
-				float radius     = stemLevel * (fCount/(float)Math.sqrt(fCount))/2000;
+				float radius = stemWidth * stemLevel *
+					(fCount/(float)Math.sqrt(fCount))/20;
 				this.drawStem(gl, stemColor, lineLength, radius);
 				gl.glTranslatef(0, lineLength, 0.0f);
+				break;
+			case LSystem.LEAF:
+				this.drawLeaf(gl, stemColor, leafSize);
 				break;
 			case LSystem.FLOWER:
 				if (plant.getAge() >= Plant.MAX_ITERATION)

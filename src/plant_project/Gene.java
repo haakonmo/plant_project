@@ -19,6 +19,9 @@ public class Gene {
 	private int reproductionCount;
 	private int maturityAge;
 
+	private float stemWidth;
+	private float leafSize;
+
 	public int getAngle() {
 		return angle;
 	}
@@ -43,8 +46,16 @@ public class Gene {
 		return maturityAge;
 	}
 
+	public float getStemWidth() {
+		return stemWidth;
+	}
+
+	public float getLeafSize() {
+		return leafSize;
+	}
+
 	public Gene(int angle, LRule[] rules, Color stemColor, Color flowerColor,
-			int reproductionCount, int maturityAge) {
+			int reproductionCount, int maturityAge, float stemWidth, float leafSize) {
 		super();
 		this.angle = angle;
 		this.rules = rules;
@@ -52,6 +63,8 @@ public class Gene {
 		this.flowerColor = flowerColor;
 		this.reproductionCount = reproductionCount;
 		this.maturityAge = maturityAge;
+		this.stemWidth = stemWidth;
+		this.leafSize = leafSize;
 	}
 
 	/**
@@ -74,11 +87,13 @@ public class Gene {
 			Color flowerColor = new Color((float) Math.random(),
 					(float) Math.random(), (float) Math.random());
 			return new Gene(angle, newRules, stemColor, flowerColor,
-					reproductionCount, maturityAge);
+					reproductionCount, maturityAge,
+					stemWidth, leafSize);
 		} else {
 			// NO MUTATION
 			return new Gene(angle, rules, stemColor, flowerColor,
-					reproductionCount, maturityAge);
+					reproductionCount, maturityAge,
+					stemWidth, leafSize);
 		}
 	}
 
