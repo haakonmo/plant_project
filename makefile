@@ -10,6 +10,10 @@ CLASSPATH := obj:src:lib/*
 
 all: $(OBJECTS)
 
+dist: jar
+	cd jar; \
+	jar cef $(MAIN) ../plant_project.jar *
+
 run: $(OBJECTS)
 	java -cp $(CLASSPATH) -ea -Xms64m -Xmx512m $(MAIN)
 
@@ -18,6 +22,11 @@ $(OBJECTS): $(SOURCES) makefile | obj
 
 clean:
 	rm -rf obj
+
+jar: $(OBJECTS)
+	mkdir -p jar
+	cp -a obj/plant_project jar
+	cp lib/*.jar jar
 
 obj:
 	mkdir -p obj
