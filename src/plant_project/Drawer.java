@@ -458,6 +458,7 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		gl.glLoadIdentity();
 
 		// Camera 1
+		gl.glTranslated(0f, -1f, 0f);
 		gl.glRotated( this.rotation[0], 1f, 0f, 0f); // tiltx
 		gl.glRotated( this.rotation[2], 0f, 0f, 1f); // tiltz
 
