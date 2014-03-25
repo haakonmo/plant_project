@@ -93,7 +93,7 @@ public class Drawer extends WindowAdapter implements KeyListener,
 	}
 
 	private void drawStem(GL2 gl, Color color, float length, float radius) {
-		final int   sides  = 3;
+		final int   sides  = 8;
 
 		gl.glColor3ub((byte)color.getRed(),
 			      (byte)color.getGreen(),
@@ -203,8 +203,9 @@ public class Drawer extends WindowAdapter implements KeyListener,
 			case LSystem.GROW:
 				// drawLine
 				float lineLength = 0.1f;
-				float radius = stemWidth * stemLevel *
-					(fCount/(float)Math.sqrt(fCount))/20;
+				float radius = stemWidth;
+				//float radius = stemWidth * stemLevel *
+				//	(fCount/(float)Math.sqrt(fCount))/20;
 				this.drawStem(gl, stemColor, lineLength, radius);
 				gl.glTranslatef(0, lineLength, 0.0f);
 				break;

@@ -2,6 +2,7 @@ package plant_project;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class Main {
@@ -9,22 +10,22 @@ public class Main {
 	/**
 	 * Water value in percent
 	 */
-	public static int water = 100;
+	public static int water = 50;
 
 	/**
 	 * Sun value in percent
 	 */
-	public static int sun = 100;
-
-	/**
-	 * Mutation probability
-	 */
-	public static int mutation = 10;
+	public static int sun = 50;
 
 	/**
 	 * Soil nutrition
 	 */
-	public static int nutrition = 10000;
+	public static int nutrition = 50;
+
+	/**
+	 * Mutation probability
+	 */
+	public static int mutation = 50;
 
 	/**
 	 * Plants in world
@@ -88,39 +89,46 @@ public class Main {
 				this.drawer.quit(); // does not return
 				break;
 			default:
-				ArrayList<Plant> newPlants = new ArrayList<Plant>(plants);
-				int n = nutrition;
-				int en;
-				for (Plant plant : plants) {
-					// plant dies
-					if (plant.getAge() >= Plant.MAX_AGE)
-						newPlants.remove(plant);
-					else {
-						// plant reproduces
-						
-						// if there's not enough nutrition, some plants die.
-						en = plant.getlString().length();
-						if (n <= en) {
-							//Delete random plants
-							//System.out.println("Deleted plant");
-							int mod = (int)(Math.random()*5);
-							for (int i=0; i < newPlants.size(); i++){
-								if (mod>2 && (i%mod)== 0){
-									Plant p = newPlants.get(i);
-									n += p.getlString().length();
-									newPlants.remove(i);
-								}
-							}
-						}
-						n -= plant.getlString().length();
-						newPlants.addAll(plant.grow());
-					}
-				}
-				plants = newPlants;
-				//System.out.println("tick");
+				// System.out.println("tick");
+				this.tick();
 				drawer.draw(plants);
 				break;
 		}
+	}
+
+	public void tick() {
+		// System.out.println("tick");
+
+		// TODO - use an interator or something instead of
+		//        doing an array copies of plants.
+		ArrayList<Plant> tmpPlants;
+
+		// TODO - make this a global
+		//        is this event the best way to do this?
+		float max_plants = 50;
+
+		// Kill off old plants
+		tmpPlants = new ArrayList<Plant>(plants);
+		for (Plant plant : tmpPlants)
+			if (plant.getAge() >= Plant.MAX_AGE)
+				plants.remove(plant);
+
+		// Run fitness function
+		//float num = (float)plants.size();
+		//for (Plant plant : plants)
+		//	plant.update(water/num, sun/num, nutrition/num);
+		for (Plant plant : plants)
+			plant.update(water, sun, nutrition);
+
+		// Sort plants and remove unfit ones
+		Collections.sort(plants);
+		while (plants.size() > max_plants)
+			plants.remove(0);
+
+		// Add offspring
+		tmpPlants = new ArrayList<Plant>(plants);
+		for (Plant plant : tmpPlants)
+			plants.addAll(plant.grow());
 	}
 
 	/**

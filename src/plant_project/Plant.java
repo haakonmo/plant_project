@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import plant_project.LSystem;
 
-public class Plant {
+public class Plant implements Comparable<Plant> {
 	public static final int MINUMUM_ITERATION = 4;
 	public static final int MAX_ITERATION = 7;
 	public static final int MAX_AGE = 8;
@@ -14,6 +14,7 @@ public class Plant {
 	private int age = 0;
 	private String lString = Character.toString(LSystem.AXIOM);
 	private Gene gene;
+	private float fitness;
 
 	public float getX() {
 		return x;
@@ -43,6 +44,59 @@ public class Plant {
 	}
 
 	/**
+	 * Fitness function:
+	 *
+	 * Update plant fitness based on environmental parameters.
+	 */
+	public void update(float waterPct, float sunPct, float nutritionPct) {
+		double total = 0;
+
+		// Genetic pressure from different parameters
+		//   (lots of sun == low pressure, etc)
+		double water     = 1.0 - (waterPct     / 100.0);
+		double sun       = 1.0 - (sunPct       / 100.0);
+		double nutrition = 1.0 - (nutritionPct / 100.0);
+
+		// Handy genetic properties
+		double leafRatio    = gene.getLeafSize()  / Gene.MAX_LEAF_SIZE;
+		double stemRatio    = gene.getStemWidth() / Gene.MAX_STEM_WIDTH;
+
+		double stemCount    = lString.length(); // TODO
+		double leafCount    = lString.length(); // TODO
+		double flowerCount  = lString.length(); // TODO
+
+		double storageSpace = stemRatio * stemCount;
+		double surfaceArea  = leafRatio * leafCount;
+
+		// Water
+		total -= surfaceArea    * water;      // Large surface area looses water
+		total += storageSpace/3 * water;      // Large stems can store water
+
+		// Sun
+		total += surfaceArea    * sun;        // Large leaves gather more light
+		total += stemCount      * sun;        // Taller plants have an advantage
+
+		// Nutrition
+		total -= storageSpace/2 * nutrition;  // Large stems can store nutrients
+		total -= stemCount/2    * nutrition;  // Large plants require more nutrients
+		total -= leafCount/2    * nutrition;  // ..
+		total -= flowerCount/2  * nutrition;  // ..
+
+		// Other
+		total += flowerCount;               // Flowers help with reproduction
+
+		this.fitness = (float)total;
+	}
+
+	/**
+	 * Compare based on fitness
+	 */
+	public int compareTo(Plant other) {
+		return this.fitness > other.fitness ?  1 :
+		       this.fitness < other.fitness ? -1 : 0;
+	}
+
+	/**
 	 * Grows plant and returns seeds(child plants)
 	 * @return seeds
 	 */
@@ -51,12 +105,12 @@ public class Plant {
 		//plants try to adapt and becomes smaller by 100% - sun (e.g. sun=65% --> 35% smaller)
 		int s = Main.sun;
 		shrinklString(s);
-		
+
 		//Water
 		//plants try to adapt and becomes smaller by 100% - water (e.g. water=65% --> 35% smaller)
 		int w = Main.water;
 		shrinklString(w);
-		
+
 		ArrayList<Plant> children = new ArrayList<Plant>();
 		++age;
 		if (MINUMUM_ITERATION <= age && age <= MAX_ITERATION) {
@@ -72,7 +126,7 @@ public class Plant {
 		}
 		return children;
 	}
-	
+
 	private void shrinklString(int percentToShrink){
 		String templString = lString;
 		if (percentToShrink != 100){
@@ -82,7 +136,7 @@ public class Plant {
 				char c = templString.charAt(i);
 				if (c == 'F'){
 					double random = Math.random();
-					boolean delete = random < Math.sqrt(percentageToDelete); 
+					boolean delete = random < Math.sqrt(percentageToDelete);
 					if (delete){
 						int index = i-numberOfCharDeleted;
 						if (index!=0 && index!=lString.length()){
@@ -93,7 +147,7 @@ public class Plant {
 				}
 				if (c == 'L'){
 					double random = Math.random();
-					boolean delete = random < Math.sqrt(percentageToDelete); 
+					boolean delete = random < Math.sqrt(percentageToDelete);
 					if (delete){
 						int index = i-numberOfCharDeleted;
 						if (index!=0 && index!=lString.length()){

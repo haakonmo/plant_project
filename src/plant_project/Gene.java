@@ -3,14 +3,22 @@ package plant_project;
 import java.awt.Color;
 
 public class Gene {
+	public static float MAX_STEM_WIDTH = 0.20f;
+	public static float MIN_STEM_WIDTH = 0.02f;
+
+	public static float MAX_LEAF_SIZE  = 0.40f;
+	public static float MIN_LEAF_SIZE  = 0.04f;
+
 	private static final char[] ORIENTATIONS = new char[] {
 		'n', 's', 'e', 'w'
 	};
+
 	private static final String[] MUTATIONS = new String[] {
 		"G", "xG", "[G]", "[xG]",
 		"F", "xF", "[F]", "[xF]",
 		"[X]", "xX",
 	};
+
 	private int angle;
 	private LRule[] rules;
 	private Color stemColor;
@@ -95,11 +103,11 @@ public class Gene {
 					break;
 				case 2:
 					// Mutate stem width
-					newStemWidth = (float)(Math.random()*0.20);
+					newStemWidth = this.randRange(MIN_STEM_WIDTH, MAX_STEM_WIDTH);
 					break;
 				case 3:
 					// Mutate leaf size
-					newLeafSize  = (float)(Math.random()*0.40);
+					newLeafSize  = this.randRange(MIN_LEAF_SIZE, MAX_LEAF_SIZE);
 					break;
 				case 4:
 					// Mutate rules
@@ -181,5 +189,9 @@ public class Gene {
 		String replace = lString.replace("x", String.valueOf(ORIENTATIONS[(int) (Math
 						.random() * (ORIENTATIONS.length - 1))]));
 		return new LRule(rule.prob, rule.find, replace);
+	}
+
+	private float randRange(float min, float max) {
+		return ((float)Math.random()) * (max-min) + min;
 	}
 }
