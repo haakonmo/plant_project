@@ -72,29 +72,52 @@ public class Gene {
 	 * mutation probability {@code Main.mutation}
 	 */
 	public Gene clone() {
+		Color   newStemColor   = stemColor;
+		Color   newFlowerColor = flowerColor;
+		float   newStemWidth   = stemWidth;
+		float   newLeafSize    = leafSize;
+		LRule[] newRules       = rules.clone();
 
-		int i = (int) (Math.random() * 100);
-		// MUTATION
-		if (i > 0 && i <= Main.mutation) {
-			LRule[] newRules = rules.clone();
-			// pick random rule to mutate
-			int mutationRuleIndex = (int) (Math.random() * (newRules.length - 1));
-			newRules[mutationRuleIndex] = mutate(newRules[mutationRuleIndex]);
-			System.out.println("old: " + rules[mutationRuleIndex]);
-			System.out.println("new: " + newRules[mutationRuleIndex]);
-			Color stemColor = new Color((float) Math.random(),
-					(float) Math.random(), (float) Math.random());
-			Color flowerColor = new Color((float) Math.random(),
-					(float) Math.random(), (float) Math.random());
-			return new Gene(angle, newRules, stemColor, flowerColor,
-					reproductionCount, maturityAge,
-					stemWidth, leafSize);
-		} else {
-			// NO MUTATION
-			return new Gene(angle, rules, stemColor, flowerColor,
-					reproductionCount, maturityAge,
-					stemWidth, leafSize);
+		// Mutation
+		if (Math.random()*100 < Main.mutation) {
+			switch ((int)(Math.random() * 5)) {
+				case 0:
+					// Mutate stem color
+					newStemColor   = new Color((float)Math.random(),
+					                           (float)Math.random(),
+					                           (float)Math.random());
+					break;
+				case 1:
+					// Mutate flower color
+					newFlowerColor = new Color((float)Math.random(),
+					                           (float)Math.random(),
+					                           (float)Math.random());
+					break;
+				case 2:
+					// Mutate stem width
+					newStemWidth = (float)(Math.random()*0.20);
+					break;
+				case 3:
+					// Mutate leaf size
+					newLeafSize  = (float)(Math.random()*0.40);
+					break;
+				case 4:
+					// Mutate rules
+					int mutationRuleIndex = (int)(Math.random()*(rules.length - 1));
+					newRules[mutationRuleIndex] = mutate(newRules[mutationRuleIndex]);
+					System.out.println("old: " + rules[mutationRuleIndex]);
+					System.out.println("new: " + newRules[mutationRuleIndex]);
+					break;
+				default:
+					// Error
+					System.out.println("Error in mutation case statement");
+					break;
+			}
 		}
+
+		return new Gene(angle, newRules, newStemColor, newFlowerColor,
+				reproductionCount, maturityAge,
+				newStemWidth, newLeafSize);
 	}
 
 	public static final int ADD = 1;

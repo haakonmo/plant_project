@@ -19,7 +19,7 @@ public class Main {
 	/**
 	 * Mutation probability
 	 */
-	public static int mutation = 1;
+	public static int mutation = 10;
 
 	/**
 	 * Soil nutrition

@@ -1,7 +1,5 @@
 package plant_project;
 
-import java.util.Random;
-
 public class LSystem {
 	public final static char AXIOM       = 'X';
 
