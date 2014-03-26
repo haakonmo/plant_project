@@ -16,6 +16,7 @@ public class Gene {
 	private static final String[] MUTATIONS = new String[] {
 		"G", "xG", "[G]", "[xG]",
 		"F", "xF", "[F]", "[xF]",
+		"L", "xL", "[L]", "[xL]",
 		"[X]", "xX",
 	};
 
