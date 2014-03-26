@@ -88,6 +88,8 @@ public class Main {
 			case 'q':
 				this.drawer.quit(); // does not return
 				break;
+			case ' ':
+				this.drawer.toggle();
 			default:
 				// System.out.println("tick");
 				this.tick();

@@ -1,7 +1,11 @@
 package plant_project;
 
+import java.util.ArrayList;
+
 import java.awt.Color;
-import java.awt.Frame;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -11,7 +15,19 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
+
+import javax.swing.Timer;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JSlider;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.ParallelGroup;
+import javax.swing.GroupLayout.SequentialGroup;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -28,7 +44,8 @@ import com.google.common.base.CharMatcher;
 import com.jogamp.opengl.util.Animator;
 import com.sun.xml.internal.ws.util.StringUtils;
 
-public class Drawer extends WindowAdapter implements KeyListener,
+public class Drawer extends WindowAdapter implements
+		ActionListener, ChangeListener, KeyListener,
 		MouseListener, MouseWheelListener, MouseMotionListener,
 		GLEventListener {
 
@@ -36,6 +53,8 @@ public class Drawer extends WindowAdapter implements KeyListener,
 	public final static float EAST_BOUND  =  4.0f;
 	public final static float WEST_BOUND  = -4.0f;
 	public final static float SOUTH_BOUND = -4.0f;
+
+	public final static int   UPDATE_RATE =  10; // hz
 
 	private enum DragMode {
 		NONE,
@@ -50,10 +69,16 @@ public class Drawer extends WindowAdapter implements KeyListener,
 
 	// Interface the rest of the world
 	private Main     main;
+	private Timer    timer;
 
 	// GUI Widgets
 	private GLCanvas canvas;
-	private Frame    frame;
+	private JPanel   tools;
+	private JSlider  water;
+	private JSlider  sun;
+	private JSlider  nutrition;
+	private JSlider  mutation;
+	private JFrame   frame;
 	private Animator animator;
 
 	// Camera state
@@ -63,23 +88,107 @@ public class Drawer extends WindowAdapter implements KeyListener,
 	private double   location[] = {35, -25, 5};
 
 	public Drawer(Main main) {
-		this.main     = main;
-		this.canvas   = new GLCanvas();
-		this.frame    = new Frame("Plant world");
-		this.animator = new Animator(canvas);
-		this.glu      = new GLU();
+		this.main      = main;
+		this.timer     = new Timer(1000/UPDATE_RATE, this);
+		this.canvas    = new GLCanvas();
+		this.tools     = new JPanel();
+		this.water     = new JSlider(0, 100);
+		this.sun       = new JSlider(0, 100);
+		this.nutrition = new JSlider(0, 100);
+		this.mutation  = new JSlider(0, 100);
+		this.frame     = new JFrame("Plant world");
+		this.animator  = new Animator(canvas);
+		this.glu       = new GLU();
+
+		this.createLabelBox(this.tools, new JComponent[][]{
+			{ new JLabel("Water"),     this.water     },
+			{ new JLabel("Sun"),       this.sun       },
+			{ new JLabel("Nutrition"), this.nutrition },
+			{ new JLabel("Mutation"),  this.mutation  },
+		});
+
+		water.addChangeListener(this);
+		water.setSnapToTicks(true);
+		water.setMajorTickSpacing(10);
+		water.setMinorTickSpacing(1);
+		water.setValue(Main.water);
+
+		sun.addChangeListener(this);
+		sun.setSnapToTicks(true);
+		sun.setMajorTickSpacing(10);
+		sun.setMinorTickSpacing(1);
+		sun.setValue(Main.sun);
+
+		nutrition.addChangeListener(this);
+		nutrition.setSnapToTicks(true);
+		nutrition.setMajorTickSpacing(10);
+		nutrition.setMinorTickSpacing(1);
+		nutrition.setValue(Main.nutrition);
+
+		mutation.addChangeListener(this);
+		mutation.setSnapToTicks(true);
+		mutation.setMajorTickSpacing(10);
+		mutation.setMinorTickSpacing(1);
+		mutation.setValue(Main.mutation);
+
+		mutation.setPaintLabels(true);
+		mutation.setPaintTicks(true);
+
 		canvas.addGLEventListener(this);
 		canvas.addKeyListener(this);
 		canvas.addMouseListener(this);
 		canvas.addMouseWheelListener(this);
 		canvas.addMouseMotionListener(this);
-		frame.add(canvas);
+
+		frame.add(canvas, BorderLayout.CENTER);
+		frame.add(tools,  BorderLayout.SOUTH);
 		frame.setSize(640, 480);
 		frame.setResizable(true);
 		frame.addWindowListener(this);
+		frame.pack();
 		frame.setVisible(true);
+
 		animator.start();
+
 		canvas.requestFocus();
+	}
+
+	/*
+	 * Private setup functions
+	 */
+	private void createLabelBox(JPanel panel, JComponent[][] items) {
+		GroupLayout layout = new GroupLayout(panel);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+		panel.setLayout(layout);
+
+		int nrows = items.length;
+		int ncols = items[0].length;
+
+		SequentialGroup cols = layout.createSequentialGroup();
+		SequentialGroup rows = layout.createSequentialGroup();
+
+		ParallelGroup[] rowg = new ParallelGroup[nrows];
+		ParallelGroup[] colg = new ParallelGroup[ncols];
+
+		for (int r = 0; r < nrows; r++)
+			rowg[r] = layout.createParallelGroup();
+		for (int c = 0; c < ncols; c++)
+			colg[c] = layout.createParallelGroup();
+
+		for (int r = 0; r < nrows; r++)
+		for (int c = 0; c < ncols; c++) {
+			rowg[r].addComponent(items[r][c]);
+			colg[c].addComponent(items[r][c]);
+		}
+
+		for (int r = 0; r < nrows; r++)
+			rows.addGroup(rowg[r]);
+		for (int c = 0; c < ncols; c++)
+			cols.addGroup(colg[c]);
+
+		layout.setHorizontalGroup(cols);
+		layout.setVerticalGroup(rows);
 	}
 
 	/*
@@ -190,7 +299,7 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		gl.glPushMatrix();
 		// move to plant origin
 		gl.glTranslatef(plant.getX(), 0.0f, plant.getY());
-		
+
 		int fCount = CharMatcher.is(LSystem.GROW).countIn(lString);
 		float step      = 0.3f;
 		float stemLevel = 1.0f;
@@ -229,7 +338,7 @@ public class Drawer extends WindowAdapter implements KeyListener,
 				gl.glPopMatrix();
 				break;
 
-			/* This spreads out the plants stems because 
+			/* This spreads out the plants stems because
 			 * it leaves the coordinate system rotated */
 			case LSystem.NORTH:
 				// rotate against north, Z
@@ -290,7 +399,6 @@ public class Drawer extends WindowAdapter implements KeyListener,
 		gl.glEnd();
 	}
 
-
 	private void drawTests(GL2 gl) {
 		boolean testLighting = false;
 		if (testLighting) {
@@ -311,6 +419,19 @@ public class Drawer extends WindowAdapter implements KeyListener,
 	/*
 	 * Public methods - called by Main
 	 */
+	public void rate(int hz) {
+		this.timer.setDelay(1000/hz);
+	}
+
+	public void toggle() {
+		boolean running = this.timer.isRunning();
+		if (running)
+			this.timer.stop();
+		else
+			this.timer.start();
+		System.out.println(running ? "stopped" : "started");
+	}
+
 	public void draw(ArrayList<Plant> plants) {
 		this.plants = plants;
 	}
@@ -366,6 +487,36 @@ public class Drawer extends WindowAdapter implements KeyListener,
 	}
 
 	/*
+	 * ActionListener Methods
+	 */
+	public void actionPerformed(ActionEvent e) {
+		this.main.tick();
+		this.draw(plants);
+	}
+
+	/*
+	 * ChangeListener Methods
+	 */
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		JSlider slider = (JSlider)e.getSource();
+		int     value  = slider.getValue();
+		String  name   = slider == this.water     ? "water"     :
+		                 slider == this.sun       ? "sun"       :
+		                 slider == this.nutrition ? "nutrition" :
+		                 slider == this.mutation  ? "mutation"  : "unknown";
+
+		if (slider == this.water)     Main.water     = value;
+		if (slider == this.sun)       Main.sun       = value;
+		if (slider == this.nutrition) Main.nutrition = value;
+		if (slider == this.mutation)  Main.mutation  = value;
+
+		System.out.format("Drawer.stateChanged - %s=%d - %d,%d,%d,%d\n",
+			name, value,
+			Main.water, Main.sun, Main.nutrition, Main.mutation);
+	}
+
+	/*
 	 * KeyListener Methods
 	 */
 	@Override
@@ -394,9 +545,9 @@ public class Drawer extends WindowAdapter implements KeyListener,
 			case 'j': this.pan(-pan, 0,   0); break;
 			case 'k': this.pan( pan, 0,   0); break;
 			case 'l': this.pan( 0,   pan, 0); break;
-			case '-': case '_': 
+			case '-': case '_':
 			case 'o': this.zoom(10./9);       break;
-			case '=': case '+': 
+			case '=': case '+':
 			case 'i': this.zoom(9./10);       break;
 			case 'H': this.rotate(0, 0, -2);  break;
 			case 'J': this.rotate(2, 0,  0);  break;
