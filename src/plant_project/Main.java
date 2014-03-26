@@ -123,6 +123,7 @@ public class Main {
 			plant.update(water, sun, nutrition);
 
 		// Sort plants and remove unfit ones
+		Collections.shuffle(plants);
 		Collections.sort(plants);
 		while (plants.size() > max_plants)
 			plants.remove(0);
