@@ -2,7 +2,7 @@ package plant_project;
 
 import java.util.ArrayList;
 
-import plant_project.LSystem;
+import com.google.common.base.CharMatcher;
 
 public class Plant implements Comparable<Plant> {
 	public static final int MINUMUM_ITERATION = 4;
@@ -54,8 +54,6 @@ public class Plant implements Comparable<Plant> {
 	 * Update plant fitness based on environmental parameters.
 	 */
 	public void update(float waterPct, float sunPct, float nutritionPct) {
-		double total = 0;
-
 		// Genetic pressure from different parameters
 		//   (lots of sun == low pressure, etc)
 		double water     = 1.0 - (waterPct     / 100.0);
@@ -66,31 +64,39 @@ public class Plant implements Comparable<Plant> {
 		double leafRatio    = gene.getLeafSize()  / Gene.MAX_LEAF_SIZE;
 		double stemRatio    = gene.getStemWidth() / Gene.MAX_STEM_WIDTH;
 
-		double stemCount    = lString.length(); // TODO
-		double leafCount    = lString.length(); // TODO
-		double flowerCount  = lString.length(); // TODO
+		double stemCount    = CharMatcher.is(LSystem.GROW).countIn(lString);
+		double leafCount    = CharMatcher.is(LSystem.LEAF).countIn(lString);
+		double flowerCount  = CharMatcher.is(LSystem.FLOWER).countIn(lString);
 
 		double storageSpace = stemRatio * stemCount;
 		double surfaceArea  = leafRatio * leafCount;
+		double biomass      = storageSpace*2 + surfaceArea + flowerCount*2;
+
+		// Fitness
+		double wfit = 0;
+		double sfit = 0;
+		double nfit = 0;
 
 		// Water
-		total -= surfaceArea    * water;      // Large surface area looses water
-		total += storageSpace/3 * water;      // Large stems can store water
+		wfit  -= surfaceArea    * water;      // Large surface area looses water
+		wfit  += stemRatio      * water;      // Large stems can store water
 
 		// Sun
-		total += surfaceArea    * sun;        // Large leaves gather more light
-		total += stemCount      * sun;        // Taller plants have an advantage
+		sfit  += surfaceArea*2  * sun;        // Large leaves gather more light
+		sfit  += stemCount      * sun;        // Taller plants have an advantage
 
 		// Nutrition
-		total -= storageSpace/2 * nutrition;  // Large stems can store nutrients
-		total -= stemCount/2    * nutrition;  // Large plants require more nutrients
-		total -= leafCount/2    * nutrition;  // ..
-		total -= flowerCount/2  * nutrition;  // ..
+		nfit  -= stemRatio      * nutrition;  // Large plants require more nutrients
+		nfit  -= surfaceArea    * nutrition;  // Large plants require more nutrients
+		nfit  -= stemCount      * nutrition;  // Large plants require more nutrients
 
 		// Other
-		total += flowerCount;               // Flowers help with reproduction
+		//total += flowerCount;                 // Flowers help with reproduction
 
-		this.fitness = (float)total;
+		this.fitness = (float)(wfit+sfit+nfit);
+
+		System.out.format("%7.2f + %7.2f + %7.2f = %7.2f\n",
+				wfit, sfit, nfit, this.fitness);
 	}
 
 	/**
