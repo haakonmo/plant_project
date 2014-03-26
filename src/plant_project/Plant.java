@@ -10,7 +10,7 @@ public class Plant implements Comparable<Plant> {
 	public static final int MAX_AGE = 8;
 	public static final float MAX_REPRODUCTION_RADIUS = 2;
 
-	private float x, y;
+	private float x, y, a;
 	private int age = 0;
 	private String lString = Character.toString(LSystem.AXIOM);
 	private Gene gene;
@@ -22,6 +22,10 @@ public class Plant implements Comparable<Plant> {
 
 	public float getY() {
 		return y;
+	}
+
+	public float getA() {
+		return a;
 	}
 
 	public int getAge() {
@@ -40,6 +44,7 @@ public class Plant implements Comparable<Plant> {
 		super();
 		this.x = x;
 		this.y = y;
+		this.a = (int)(Math.random()*360);
 		this.gene = gene;
 	}
 

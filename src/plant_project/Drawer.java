@@ -299,6 +299,7 @@ public class Drawer extends WindowAdapter implements
 		gl.glPushMatrix();
 		// move to plant origin
 		gl.glTranslatef(plant.getX(), 0.0f, plant.getY());
+		gl.glRotatef(plant.getA(), 0.0f, 1.0f, 0.0f);
 
 		int fCount = CharMatcher.is(LSystem.GROW).countIn(lString);
 		float step      = 0.3f;

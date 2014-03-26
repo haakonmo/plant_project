@@ -186,8 +186,9 @@ public class Gene {
 			}
 			break;
 		}
-		String replace = lString.replace("x", String.valueOf(ORIENTATIONS[(int) (Math
-						.random() * (ORIENTATIONS.length - 1))]));
+		int dir = (int)(Math.random()*ORIENTATIONS.length);
+		String replace = lString.replace("x",
+				String.valueOf(ORIENTATIONS[dir]));
 		return new LRule(rule.prob, rule.find, replace);
 	}
 
