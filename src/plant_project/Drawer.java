@@ -3,6 +3,7 @@ package plant_project;
 import java.util.ArrayList;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +16,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 
 import javax.swing.Timer;
 import javax.swing.JComponent;
@@ -34,7 +36,7 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GL2ES1;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
-import javax.media.opengl.awt.GLCanvas;
+import javax.media.opengl.awt.GLJPanel;
 import javax.media.opengl.fixedfunc.GLLightingFunc;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import javax.media.opengl.glu.GLU;
@@ -72,7 +74,7 @@ public class Drawer extends WindowAdapter implements
 	private Timer    timer;
 
 	// GUI Widgets
-	private GLCanvas canvas;
+	private GLJPanel canvas;
 	private JPanel   tools;
 	private JSlider  water;
 	private JSlider  sun;
@@ -90,7 +92,7 @@ public class Drawer extends WindowAdapter implements
 	public Drawer(Main main) {
 		this.main      = main;
 		this.timer     = new Timer(1000/UPDATE_RATE, this);
-		this.canvas    = new GLCanvas();
+		this.canvas    = new GLJPanel();
 		this.tools     = new JPanel();
 		this.water     = new JSlider(0, 100);
 		this.sun       = new JSlider(0, 100);
@@ -433,6 +435,17 @@ public class Drawer extends WindowAdapter implements
 		System.out.println(running ? "stopped" : "started");
 	}
 
+	public BufferedImage toImage(boolean full) {
+		this.canvas.setupPrint(1, 1, 0, -1, -1);
+		Component comp = full ? this.frame : this.canvas;
+		BufferedImage image = new BufferedImage(
+			comp.getWidth(),
+			comp.getHeight(),
+			BufferedImage.TYPE_INT_RGB);
+		comp.printAll(image.getGraphics());
+		return image;
+	}
+
 	public void draw(ArrayList<Plant> plants) {
 		this.plants = plants;
 	}
@@ -638,7 +651,6 @@ public class Drawer extends WindowAdapter implements
 	 */
 	@Override
 	public void display(GLAutoDrawable gLDrawable) {
-
 		final GL2 gl = gLDrawable.getGL().getGL2();
 
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
