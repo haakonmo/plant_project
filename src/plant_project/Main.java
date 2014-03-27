@@ -168,6 +168,13 @@ public class Main {
 		//	new Color(0.3f, 0.3f, 0.8f),
 		//	2, Plant.MAX_ITERATION)));
 
+		//plants.add(new Plant(0, 0, new Gene(15,
+		//	new LRule[] { new LRule(0.75, 'X', "GGGG[nX][sX][eX][wX][X]"),
+		//	              new LRule(0.75, 'G', "GG") },
+		//	new Color(0.0f, 0.8f, 0.2f),
+		//	new Color(0.3f, 0.3f, 0.8f),
+		//	2, Plant.MAX_ITERATION, 0.01f, 0.1f)));
+
 		plants.add(new Plant(0, 0, new Gene(15,
 			new LRule[] { new LRule(0.75, 'X', "Gn[[X]sXL]eG[sGXF]X"),
 			              new LRule(0.75, 'G', "GG") },
