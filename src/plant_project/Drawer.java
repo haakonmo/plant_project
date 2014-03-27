@@ -1,6 +1,8 @@
 package plant_project;
 
 import java.util.ArrayList;
+import java.io.File;
+import javax.imageio.ImageIO;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -72,6 +74,7 @@ public class Drawer extends WindowAdapter implements
 	// Interface the rest of the world
 	private Main     main;
 	private Timer    timer;
+	private Video    video;
 
 	// GUI Widgets
 	private GLJPanel canvas;
@@ -443,11 +446,45 @@ public class Drawer extends WindowAdapter implements
 			comp.getHeight(),
 			BufferedImage.TYPE_INT_RGB);
 		comp.printAll(image.getGraphics());
+		this.canvas.releasePrint();
 		return image;
+	}
+
+	public void capture(String path) {
+		try {
+			System.out.println("Saving - " + path);
+			File file = new File(path);
+			file.getParentFile().mkdirs();
+			BufferedImage img = this.toImage(true);
+			ImageIO.write(img, "png", file);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void record(String path) {
+		if (this.video == null) {
+			System.out.println("Record - " + path);
+			File file = new File(path);
+			file.getParentFile().mkdirs();
+			this.video = new Video(file, UPDATE_RATE);
+		} else {
+			System.out.println("Record - done");
+			Video vid = this.video;
+			this.video = null;
+			vid.finish();
+		}
 	}
 
 	public void draw(ArrayList<Plant> plants) {
 		this.plants = plants;
+
+		// record video
+		if (this.video != null) {
+			System.out.println("Record - frame");
+			BufferedImage img = this.toImage(true);
+			this.video.encodeImage(img);
+		}
 	}
 
 	public void pan(double fwd, double side, double up) {

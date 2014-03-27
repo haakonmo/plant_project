@@ -1,16 +1,10 @@
 package plant_project;
 
-import java.io.File;
-
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Scanner;
-
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-
-import javax.imageio.ImageIO;
 
 public class Main {
 
@@ -49,6 +43,8 @@ public class Main {
 	 */
 	public void keyPress(char c, String in)
 	{
+		Date   time;
+		String path;
 		switch (c) {
 			case 'p':
 				// plant p=(probability:find:replace; ...), reproducecount, maturityage
@@ -96,7 +92,20 @@ public class Main {
 				this.drawer.quit(); // does not return
 				break;
 			case 'c':
-				this.screenshot(); // take screen capture
+				// take screen capture
+				time = new Date();
+				path = String.format(
+					"img/screenshot-%tY%tm%td_%tH%tM%tS_%tL.png",
+					time, time, time, time, time, time, time);
+				this.drawer.capture(path);
+				break;
+			case 'r':
+				// toggle video recording
+				time = new Date();
+				path = String.format(
+					"img/video-%tY%tm%td_%tH%tM%tS.mp4",
+					time, time, time, time, time, time);
+				this.drawer.record(path);
 				break;
 			case ' ':
 				this.drawer.toggle();
@@ -108,20 +117,6 @@ public class Main {
 		}
 	}
 
-	public void screenshot() {
-		final Date time = new Date();
-		final String path = String.format("img/screenshot-%tY%tm%td_%tH%tM%tS_%tL.png",
-				time, time, time, time, time, time, time);
-		System.out.println("Saving - " + path);
-		try {
-			File file = new File(path);
-			file.mkdirs();
-			BufferedImage img = this.drawer.toImage(true);
-			ImageIO.write(img, "png", file);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
 	public void tick() {
 		// System.out.println("tick");
 
