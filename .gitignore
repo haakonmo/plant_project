@@ -1,6 +1,7 @@
 *~
 *.jar
 *.swp
+*.mp4
 config.mk
 bin/
 lib/

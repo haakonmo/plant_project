@@ -123,26 +123,27 @@
 
 \begin{abstract}
 
-L-systems, or Lindenmayer systems, are often used for realistic looking
+L-systems, or Lindenmayer systems, are often used to create realistic looking
 artificial plant environments. While conceptually simple, L-systems have been
 extended with many features to create realistic plants models based on a
-description of the plant growth patterns. While significant progress has been
-made in providing robust frameworks for modeling artificial plants, the process
-of creating specific plants species is still very much a manual process that
-often requires a deep understanding of the tools used.
+description of the plant growth patterns. Significant progress has been made in
+providing robust frameworks for modeling artificial plants, but the process of
+creating specific plants species is still very much a manual process that often
+requires a deep understanding of the tools used.
 
 In this project we will explore an alternate approach to plant species creation
-by using genetic algorithms to automatically evolve plants suitable to
-particular environments.
+using genetic algorithms to automatically evolve plants suitable to particular
+environments.
 
-By tuning environmental parameters for availability of water, the amount of
+By tuning environmental parameters for the availability of water, the amount of
 sunlight, and the ambient soil conditions, artificial plant species are produced
-which resembling physical plants that grown in similar environments.
+which resembling physical plants that may grown in similar environments.
 
-In this approach to plant generation, the underlying L-system production rules
-are evolved based on random mutation combined with a fitness function to
-determine plant survival rates. In addition to the L-systems, several additional
-parameters are introduced to control plant growth and simulation at a more
+With this approach to plant species generation, the underlying L-system
+production rules are evolved based on random mutation combined with a fitness
+function to determine plant survival rates. In addition to the L-systems,
+several additional parameters are introduced to control plant growth and
+simulation at a more
 abstract level.
 
 \end{abstract}
@@ -155,19 +156,33 @@ abstract level.
 
 \section{Software Architecture}
 
-We closely examined different existing frameworks that we considered using for
-our project. The two frameworks that were the best candidates was
-OpenAlea\cite{openalea} and Algorithmic Botany\cite{abotany}. Eventually we
-decided to implement the software from scratch.
+We closely examined several existing frameworks that we considered using for
+this project. The two frameworks that were the best candidates were Algorithmic
+Botany\cite{abotany} and OpenAlea\cite{openalea}.
 
-The software was implemented using Java and OpenGL for drawing. The top-level
-architecture can be divided into two main categories: plant simulation using
-L-systems and the graphical user interface.
+The Algorithmic Botany suit consists of the VLAB software which can be used on
+Mac OS and Linux, the L-studio software for Microsoft Windows, and an easy to
+use TreeSketch application for iPad. We primarily experimented with using VLAB
+under but found that a significant amount of effort was required to install and
+interact with the tools and we estimated that there would be a large learning
+curve before we would proficient enough to modify the software for our needs.
+
+OpenAlea is implemented as a set of Python libraries utilizing native code for
+certain functions. As with Algorithmic Botany, installation and use of the tools
+was challenging. OpenAlea appears to be most targeted towards plant researchers
+who wish to manually model specific plants.
+
+As L-systems are conceptually very simple, we decided to create a separate
+implementation of the algorithms in order to avoid risks associated with reusing
+existing software which we have little experience with. Our software was
+implemented using Java and OpenGL for drawing. The top-level architecture can be
+divided into two main categories: plant simulation using L-systems and the
+graphical user interface.
 
 \subsection{Plants}
 
-The L-systems are implemented in the LSystem and LRule classes, which are
-responsible for storing the production rules associated with each plant and
+Our L-systems algorithms are implemented in the LSystem and LRule classes, which
+are responsible for storing the production rules associated with each plant and
 iterating the plants phenotype as the plant grows throughout the simulation. The
 Gene and Plant classes store representations of each living plant. The Gene
 class represents the plant genotype as a combination of the L-system production
@@ -177,7 +192,7 @@ matures. Each individual plants phenotype is represented using the Plant class
 and contains it's X/Y position and orientation inside the world, along with the
 current age and a L-system string (L-string) representing the plants current
 shape. The Plant class is also responsible for calculating each individual
-plants fitness values at the end of each simulation tick.
+plants fitness values during each simulation tick.
 
 \subsection{User Interface}
 
@@ -195,7 +210,7 @@ executing.
 \section{Plant Simulation}
 
 Each plant in our environment contains a string of symbol (which we call an
-"L-string") representing the plants current shape and size. Each symbol can
+``L-string'') representing the plants current shape and size. Each symbol can
 represent a stem segment, a flower, a leaf, etc. The plants genotype contains a
 set of production rules that govern the growth and development of the plant.
 When the plant grows, the production rules are used to replace symbols in the
@@ -228,7 +243,7 @@ Using the push and pop symbols, {[} and {]}, the plant can grow branches in
 different directions. For example, a north -- south Y shape can be grown using
 the string: \[ G [ s G ] [ n G ] \]
 
-An example of a plant at first generation:
+Example of a plant at the first generation:
 
 \begin{description}[leftmargin=!,labelindent=0.2in,labelwidth=0.4in]
   \item[Angle] 15 degrees
@@ -243,7 +258,7 @@ Notice that this plant will not start with flowers ($F$) or leaves ($L$).
 
 The simulation of the plant environment is governed by ticks. During each tick,
 each of the currently living plant objects becomes older. We wanted to have a
-similar approach to have plants grow in the real world. Consequently, during the
+similar approach to how plants grow in the real world. Consequently, during the
 first 4 ticks the plant grows as a seed under ground. On the fifth tick it
 starts growing above ground. When the seventh tick is reached, the plant becomes
 mature and grows flowers and leaves, if the plants genotype is capable of it.
@@ -294,15 +309,15 @@ the following ways:
 
 We want to simulate subtle changes in the gene as the mutation isn't suppose to
 be extreme in any ways. Gene mutation occurs by choosing one of the production
-rules and then mutation the replacement side of the rule. A symbol is randomly
+rules and then mutating the replacement side of the rule. A symbol is randomly
 chosen from the replacement to be mutated.
 
-The mutation can either be that the symbols is simply deleted, or that is then
-replaced with a sequences from a predefined set of possible mutations.
+The mutation can either result in a symbol being deleted or begin replaced with
+a sequences from a predefined set of possible mutations.
 
 The replacement sequences we used are logically divided into several logical
 groups, however these divisions are just for convenience and are not used by the
-mutation algorithm.
+mutation algorithm:
 
 \begin{description}[leftmargin=!,labelindent=0.2in,labelwidth=0.5in]
   \item[Stems]   $G,~~xG,~~[G],~~[xG]$
@@ -349,44 +364,45 @@ Each of these parameters initially ranges from 0 to 100 and can be changed by
 the user interacting with the software. In addition, a mutation parameter
 controls the rate of change in the plant genomes.
 
-For the purpose of fitness calculations, a ``genetic pressure'' version of each
-of these parameters is calculated and used in the fitness function.
+For the purpose of fitness calculations, a ``genetic pressure'' is calculated
+for of each of these parameters and used in the fitness function.
 \[pressure = 1 - (parameter / 100)\]
 
 \subsubsection{Plant parameters}
 
-When calculating each plants fitness several plant parameters are used:
+While evaluating the fitness function, several plant parameters are used and
+derived parameters are created to simplify the fitness function itself:
 
 \begin{description}[leftmargin=!,labelindent=0.2in,labelwidth=0.1in]
   \item[Stem ratio]    \hfill \\
-    Normalized stem width, $0 .. 1$
+    Normalized stem width, 0 = narrow stems, 1 = wide stems
   \item[Leaf ratio]    \hfill \\
-    Normalized leaf size, $0 .. 1$
+    Normalized leaf size, 0 = small leaves, 1 = wide leaves
   \item[Stem count]    \hfill \\
     The number of stem segments the plant has grown thus far.
   \item[Leaf count]    \hfill \\
     The number of leaves grown thus far.
   \item[Storage space] \hfill \\
     The total storage space available to the plant. We do not calculate an
-    actual volume but instead just use a combination of the stem width from the
+    actual volume but instead use a combination of the stem width from the
     plants genes and the number of stem segments.
     \[ storageSpace = stemRatio \times stemCount \]
   \item[Surface area]  \hfill \\
-    The total surface area available in the leaves for photosynthesis. Like the
-    storage space, this is a combination of the leaf size and the number of
+    The total surface area available in the leaves for photosynthesis. Similar
+    to storage space, this is a combination of the leaf size and the number of
     leaves.
     \[ surfaceArea = leafRatio \times leafCount \]
 \end{description}
 
 \subsubsection{Fitness calculation}
 
-The plant fitness function is divided by water, sun, an nutrient fitness. Each
-of these is calculated separately and the total fitness is the sum. We
-implemented the fitness equations such that if all the environmental parameters
-are equal, then all the fitness values will also be equal and the plants will
-evolve randomly. In a more comprehensive system, some plants could be considered
-more or less fit in any environment including an environment with equal
-environmental parameters.
+The plant fitness function is divided into three parts corresponding to the
+water, sun, an nutrient levels. Each of these is calculated separately and the
+total fitness is summed afterwards. We implemented the fitness equations such
+that if all the environmental parameters are equal, then all the fitness values
+will also be equal and the plants will evolve randomly. In a more comprehensive
+system, some plants could be considered more or less fit in any environment
+including an environment with equal environmental parameters.
 
 The following guidelines were used by our fitness function:
 
@@ -408,8 +424,8 @@ waterFitness &=& (storageSpace \times waterPressure) \\
   \item A large surface area collects more light and results in a higher fitness
     in shady environments.
   \item More stem segments will result in a taller plant which can college more
-    light. We do not calculate actual heights, but assume that stem segments
-    improve light gathering.
+    light. We do not calculate actual heights, but assume that additional stem
+    segments improve light gathering.
 \end{itemize}
 \vspace{-0.5em}
 \begin{eqnarray*}
@@ -441,21 +457,26 @@ that evolve in poor soil conditions.
 
 In future programs we would recommend improving the genetic fitness functions by
 taking into consideration environmental information related to the neighboring
-plants in the environment. This would use more advanced lighting and collision
-detection to calculate sunlight based on shadows in the environment.
+plants. This would require more advanced lighting and collision detection to
+calculate sunlight collection and photosynthesis based on shadows in the
+environment.
 
 In addition, more realistic fitness levels could be used that are not linear
 with regards to the amount of pressure from different environmental parameters.
 In our system, a leafy plant may always win over other plants in a shady
-simulation environment even though such as large pant may not be support in a
+simulation environment even though such as large plant may not be support in a
 physical environment to do water or soil limitations.
 
-Some difficulty was encountered evolving plants to appear realistic, and many
-limitations are inherit which are difficult to simulation in a computer graphics
-setting. For example, two physical plants which share a remarkable resemblances
-my be suited to different environments due to small evolutionary changes. Waxy
-leaves, for example, could result in a leafy plant well suited to a dry
-environment.
+Some difficulty was encountered evolving plants that appear realistic; some
+limitations may be inherit to genetic algorithms which rely on graphical
+simulations. For example, two physical plants may share a remarkable resemblance
+but may be suited to different environments due to small evolutionary changes.
+Waxy leaves, for example, could result in a leafy plant well suited to a dry
+environment. Additionally, flowering plants often evolve to attract insects and
+other animals which act as pollinators and seed dispersers. Without complex
+organisms interacting with the plants it may be difficult to evolve certain
+features such as fruits and flowers, without predefining certain
+characteristics.
 
 Overall, we have shown that artificial plants based on L-systems can be evolved
 in realistic ways based on abstract environmental parameters. Using L-strings to
