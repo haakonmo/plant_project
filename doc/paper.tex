@@ -8,6 +8,26 @@
 \usepackage{amsmath}
 \usepackage[utf8]{inputenc}
 
+\newcommand{\onecol}[3]{
+  \begin{figure}
+    \centering
+    \includegraphics[width=\columnwidth]{#1}
+    \vspace{0.0in}%??
+    \caption{#3}
+    \label{#2}
+  \end{figure}
+}
+
+\newcommand{\twocol}[3]{
+  \begin{figure*}
+    \centering
+    \includegraphics[width=5.5in]{#1}
+    \vspace{0.1in}%??
+    \caption{#3}
+    \label{#2}
+  \end{figure*}
+}
+
 %%%%%%%%%%%%%%%
 % Information %
 %%%%%%%%%%%%%%%
@@ -103,30 +123,27 @@
 
 \begin{abstract}
 
-The project will focus on modeling natural looking plants using simulated
-environment parameters to control growth and evolution of different plant
-species. Genetic algorithms or other evolutionary techniques will be used to
-evolve plant suitable for growth in various environments.
+L-systems, or Lindenmayer systems, are often used for realistic looking
+artificial plant environments. While conceptually simple, L-systems have been
+extended with many features to create realistic plants models based on a
+description of the plant growth patterns. While significant progress has been
+made in providing robust frameworks for modeling artificial plants, the process
+of creating specific plants species is still very much a manual process that
+often requires a deep understanding of the tools used.
 
-Potential environmental conditions:
+In this project we will explore an alternate approach to plant species creation
+by using genetic algorithms to automatically evolve plants suitable to
+particular environments.
 
-\begin{itemize*}
-  \item Availability of water
-  \item Amount of sunlight
-  \item Soil conditions
-  \item Growth elevation
-\end{itemize*}
+By tuning environmental parameters for availability of water, the amount of
+sunlight, and the ambient soil conditions, artificial plant species are produced
+which resembling physical plants that grown in similar environments.
 
-Potential plant species parameters:
-
-\begin{itemize*}
-  \item Rate of water loss
-  \item Food and water storage capability
-  \item Total mass/volume
-  \item Crown height
-  \item Leaf area
-  \item Root structures
-\end{itemize*}
+In this approach to plant generation, the underlying L-system production rules
+are evolved based on random mutation combined with a fitness function to
+determine plant survival rates. In addition to the L-systems, several additional
+parameters are introduced to control plant growth and simulation at a more
+abstract level.
 
 \end{abstract}
 
@@ -136,34 +153,29 @@ Potential plant species parameters:
 % Content %
 %%%%%%%%%%%%
 
-\section{Introduction}
-
-Karl Sims introduced Panspermia in 1990.
-
-LSystem
+\section{Software Architecture}
 
 We closely examined different existing frameworks that we considered using for
 our project. The two frameworks that were the best candidates was
-OpenAlea\cite{openalea} and Algorithmic Botany\cite{abotany}.
-
-\section{Software Architecture}
+OpenAlea\cite{openalea} and Algorithmic Botany\cite{abotany}. Eventually we
+decided to implement the software from scratch.
 
 The software was implemented using Java and OpenGL for drawing. The top-level
 architecture can be divided into two main categories: plant simulation using
-L-Systems and the graphical user interface.
+L-systems and the graphical user interface.
 
 \subsection{Plants}
 
-The L-Systems are implemented in the LSystem and LRule classes, which are
+The L-systems are implemented in the LSystem and LRule classes, which are
 responsible for storing the production rules associated with each plant and
 iterating the plants phenotype as the plant grows throughout the simulation. The
 Gene and Plant classes store representations of each living plant. The Gene
-class represents the plant genotype as a combination of the L-System production
+class represents the plant genotype as a combination of the L-system production
 rules along with additional information such as stem and leaf size, stem and
 flower colors, the number of seeds produced, and the age at which the plant
 matures. Each individual plants phenotype is represented using the Plant class
 and contains it's X/Y position and orientation inside the world, along with the
-current age and a L-System string (L-String) representing the plants current
+current age and a L-system string (L-string) representing the plants current
 shape. The Plant class is also responsible for calculating each individual
 plants fitness values at the end of each simulation tick.
 
@@ -178,21 +190,23 @@ the user. The graphical interfaces also provides convenient controls for each of
 the environmental parameters so that they can be tuned while the simulation is
 executing.
 
-\includegraphics[width=\columnwidth]{images/architecture.png}
+\onecol{images/architecture.png}{arch}{Conceptual software architecture}
 
 \section{Plant Simulation}
 
 Each plant in our environment contains a string of symbol (which we call an
-"L-String") representing the plants current shape and size. Each symbol can
+"L-string") representing the plants current shape and size. Each symbol can
 represent a stem segment, a flower, a leaf, etc. The plants genotype contains a
 set of production rules that govern the growth and development of the plant.
 When the plant grows, the production rules are used to replace symbols in the
-plants current L-String with sequences of tokens to produces a larger and more
+plants current L-string with sequences of tokens to produces a larger and more
 complex plant.
 
-\subsection{L-System Genotypes}
+\onecol{images/screenshot.png}{screen}{Example plant simulation}
 
-We implemented a modified variant of L-Systems where a replacement probability
+\subsection{L-system Genotypes}
+
+We implemented a modified variant of L-systems where a replacement probability
 is included in addition to the matching and replacement parts of each production
 rule. The possible values for each symbol in our rules are as follows:
 
@@ -272,7 +286,7 @@ the following ways:
     The length of each leaf is changed. Upper and lower limits are used. The
     leaf shape is fixed for drawing purposes.
   \item[Growth rules] \hfill \\
-    The L-System productions used to control the plants growth are changed. The
+    The L-system productions used to control the plants growth are changed. The
     plant may become either more or less complex.
 \end{description}
 
@@ -443,8 +457,8 @@ my be suited to different environments due to small evolutionary changes. Waxy
 leaves, for example, could result in a leafy plant well suited to a dry
 environment.
 
-Overall, we have shown that artificial plants based on L-Systems can be evolved
-in realistic ways based on abstract environmental parameters. Using L-Strings to
+Overall, we have shown that artificial plants based on L-systems can be evolved
+in realistic ways based on abstract environmental parameters. Using L-strings to
 represent plants results in both realistic looking shapes and provides the
 foundation for genetic algorithm for controlling the development of plant
 species.

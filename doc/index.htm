@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+	<head>
+		<style>
+			.video {
+				float: left;
+			}
+			video {
+				height: 634px;
+				width:  786px;
+			}
+		</style>
+		<title>Plant Modeling Using Environmental Parameters</title>
+	</head>
+	<body>
+		<center>
+			<h1>Plant Modeling Using Environmental Parameters</h1>
+			University of California, Los Angeles<br />
+			CS275 &ndash; Artificial Life for Computer Graphics and Vision
+		</center>
+
+		<h2>Abstract</h2>
+		<p>
+                L-systems, or Lindenmayer systems, are often used for realistic looking
+                artificial plant environments. While conceptually simple, L-systems have been
+                extended with many features to create realistic plants models based on a
+                description of the plant growth patterns. While significant progress has been
+                made in providing robust frameworks for modeling artificial plants, the process
+                of creating specific plants species is still very much a manual process that
+                often requires a deep understanding of the tools used.
+                </p>
+                <p>
+                In this project we will explore an alternate approach to plant species creation
+                by using genetic algorithms to automatically evolve plants suitable to
+                particular environments.
+                </p>
+                <p>
+                By tuning environmental parameters for availability of water, the amount of
+                sunlight, and the ambient soil conditions, artificial plant species are produced
+                which resembling physical plants that grown in similar environments.
+                </p>
+                <p>
+                In this approach to plant generation, the underlying L-system production rules
+                are evolved based on random mutation combined with a fitness function to
+                determine plant survival rates. In addition to the L-systems, several additional
+                parameters are introduced to control plant growth and simulation at a more
+                abstract level.
+		</p>
+
+		<img src="images/screenshot.png" />
+
+		<h2>Videos</h2>
+		<h3>Downloads</h3>
+		<ul>
+			<li><a href="video/normal.mp4">normal.mp4</a></li>
+			<li><a href="video/brush.mp4">brush.mp4</a></li>
+			<li><a href="video/cacti.mp4">cacti.mp4</a></li>
+			<li><a href="video/trees.mp4">trees.mp4</a></li>
+		</ul>
+
+		<h3>Normal environment parameters</h3>
+		<p>Standard simulation using 50% values for all environmental
+		   parameters. A variety of plants evolve at random.</p>
+		<video controls>
+			<source src="video/normal.mp4" type="video/mp4">
+			Your browser does not support the video tag.
+		</video> 
+
+		<h3>Barren environment</h3>
+		<p>Simulation of a barren environment with low soil nutrient
+		   levels. The simulation starts with default parameters after
+		   which the nutrient level is decreased. Consequently the
+		   plant species become smaller and simpler, appearing almost
+		   grass like. Later the nutrient levels are increased slightly
+		   and the sunlight level is decreased as well resulting in the
+		   evolution of leafy brush like plants.</p>
+		<video controls>
+			<source src="video/brush.mp4" type="video/mp4">
+			Your browser does not support the video tag.
+		</video> 
+
+		<h3>Dry environment</h3>
+		<p>Simulation of a dry environment with low water levels.
+		   The initially plant species quickly loose their leaves and
+		   begin to grow thick stems which could be used for water
+		   storage.</p>
+		<video controls>
+			<source src="video/cacti.mp4" type="video/mp4">
+			Your browser does not support the video tag.
+		</video> 
+
+		<h3>Shady environment</h3>
+		<p>Simulation of a shady environment with medium nutrient
+		   levels. Selectional pressure favors large leafy plants which
+		   can collect the most light resulting in a dense forested
+		   environment.</p>
+		<video controls>
+			<source src="video/trees.mp4" type="video/mp4">
+			Your browser does not support the video tag.
+		</video> 
+	</body>
+</html>
