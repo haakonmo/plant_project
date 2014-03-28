@@ -94,6 +94,7 @@ public class Drawer extends WindowAdapter implements
 
 	public Drawer(Main main) {
 		this.main      = main;
+		this.plants    = main.plants;
 		this.timer     = new Timer(1000/UPDATE_RATE, this);
 		this.canvas    = new GLJPanel();
 		this.tools     = new JPanel();
@@ -480,12 +481,9 @@ public class Drawer extends WindowAdapter implements
 		}
 	}
 
-	public void draw(ArrayList<Plant> plants) {
-		this.plants = plants;
-
-		// record video
+	public void addFrame(String id) {
 		if (this.video != null) {
-			System.out.println("Record - frame");
+			System.out.println("Record - frame - " + id);
 			BufferedImage img = this.toImage(true);
 			this.video.encodeImage(img);
 		}
@@ -510,6 +508,9 @@ public class Drawer extends WindowAdapter implements
 		while (this.location[1] < -180) this.location[1] += 360;
 		while (this.location[1] >  180) this.location[1] -= 360;
 		this.location[2] = Math.abs(this.location[2]);
+
+		/* Record frame */
+		this.addFrame("pan");
 	}
 
 	public void rotate(double x, double y, double z) {
@@ -527,12 +528,15 @@ public class Drawer extends WindowAdapter implements
 		while (this.rotation[1] >  180) this.rotation[1] -= 360;
 		while (this.rotation[2] < -180) this.rotation[2] += 360;
 		while (this.rotation[2] >  180) this.rotation[2] -= 360;
+
+		/* Record frame */
+		this.addFrame("rotate");
 	}
 
 	public void zoom(double scale) {
 		//System.out.println("Drawer.zoom - " + scale);
-
 		this.location[2] *= scale;
+		this.addFrame("zoom");
 	}
 
 	public void quit() {
@@ -546,7 +550,7 @@ public class Drawer extends WindowAdapter implements
 	 */
 	public void actionPerformed(ActionEvent e) {
 		this.main.tick();
-		this.draw(plants);
+		this.addFrame("tick");
 	}
 
 	/*
@@ -569,6 +573,8 @@ public class Drawer extends WindowAdapter implements
 		System.out.format("Drawer.stateChanged - %s=%d - %d,%d,%d,%d\n",
 			name, value,
 			Main.water, Main.sun, Main.nutrition, Main.mutation);
+
+		this.addFrame("state");
 	}
 
 	/*
@@ -784,6 +790,9 @@ public class Drawer extends WindowAdapter implements
 
 	@Override
 	public void dispose(GLAutoDrawable gLDrawable) {
+		// stop recording
+		if (this.video != null)
+			this.record(null);
 	}
 
 	/*

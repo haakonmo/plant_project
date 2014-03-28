@@ -112,12 +112,22 @@ public class Main {
 					time, time, time, time, time, time);
 				this.drawer.record(path);
 				break;
+			case 'f':
+				// record frame
+				this.drawer.addFrame("user");
+				break;
+			case 'x':
+				// kill all plants and reset
+				this.resetPlants();
+				break;
 			case ' ':
+				// play/pause
 				this.drawer.toggle();
+				break;
 			default:
 				// System.out.println("tick");
 				this.tick();
-				drawer.draw(plants);
+				this.drawer.addFrame("tick");
 				break;
 		}
 	}
@@ -158,42 +168,46 @@ public class Main {
 		System.out.println("tick - removed " + doomed);
 	}
 
-	/**
-	 * Main constructor
-	 */
-	public Main() {
-		this.plants = new ArrayList<Plant>();
-		this.drawer = new Drawer(this);
+	public void resetPlants() {
+		this.plants.clear();
 
 		/* Wikipedia example L-System */
-		//plants.add(new Plant(0, 0, new Gene(15,
+		//this.plants.add(new Plant(0, 0, new Gene(15,
 		//	new LRule[] { new LRule(1, 'X', "Gn[[X]sX]sG[sGX]nX"),
 		//	              new LRule(1, 'G', "GG") },
 		//	new Color(0.0f, 0.8f, 0.2f),
 		//	new Color(0.3f, 0.3f, 0.8f),
 		//	2, Plant.MAX_ITERATION)));
 
-		//plants.add(new Plant(0, 0, new Gene(15,
+		//this.plants.add(new Plant(0, 0, new Gene(15,
 		//	new LRule[] { new LRule(0.75, 'X', "GGGG[nX][sX][eX][wX][X]"),
 		//	              new LRule(0.75, 'G', "GG") },
 		//	new Color(0.0f, 0.8f, 0.2f),
 		//	new Color(0.3f, 0.3f, 0.8f),
 		//	2, Plant.MAX_ITERATION, 0.01f, 0.1f)));
 
-		plants.add(new Plant(0, 0, new Gene(15,
+		this.plants.add(new Plant(0, 0, new Gene(15,
 			new LRule[] { new LRule(0.75, 'X', "Gn[[X]sXL]eG[sGXF]X"),
 			              new LRule(0.75, 'G', "GG") },
 			new Color(0.0f, 0.8f, 0.2f),
 			new Color(0.3f, 0.3f, 0.8f),
 			2, Plant.MAX_ITERATION, 0.01f, 0.1f)));
 
-		plants.add(new Plant(1, 0, new Gene(15,
+		this.plants.add(new Plant(1, 0, new Gene(15,
 			new LRule[] { new LRule(0.75, 'X', "Gs[[GL]eX]nG[wGXL]G"),
 			              new LRule(0.75, 'G', "GG") },
 			new Color(0.2f, 0.9f, 0.9f),
 			new Color(0.8f, 0.3f, 0.3f),
 			2, Plant.MAX_ITERATION, 0.01f, 0.1f)));
+	}
 
+	/**
+	 * Main constructor
+	 */
+	public Main() {
+		this.plants = new ArrayList<Plant>();
+		this.drawer = new Drawer(this);
+		this.resetPlants();
 		System.out.format("%-16s %3d%% (s=?)\n", "Sun:", sun);
 		System.out.format("%-16s %3d%% (w=?)\n", "Water:", water);
 		System.out.format("%-16s %3d%% (m=?)\n", "Mutation Prob:", mutation);
