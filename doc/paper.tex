@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{enumitem}
+\usepackage{amsmath}
 \usepackage[utf8]{inputenc}
 
 %%%%%%%%%%%%%%%
@@ -164,7 +165,7 @@ matures. Each individual plants phenotype is represented using the Plant class
 and contains it's X/Y position and orientation inside the world, along with the
 current age and a L-System string (L-String) representing the plants current
 shape. The Plant class is also responsible for calculating each individual
-plants fitness values at the end of each simulation step.
+plants fitness values at the end of each simulation tick.
 
 \subsection{User Interface}
 
@@ -314,13 +315,139 @@ direction to grow, i.e. `n', `e', `s' or `w'.
 % nfit  -= surfaceArea   * nutrition;  // Large plants require more nutrients
 % nfit  -= stemCount     * nutrition;  // Large plants require more nutrients
 
+At the start of each simulation tick, each existing plant updates a fitness
+value based on the current environmental parameters and the plants current
+growth state. The list of plants is then sorted based on fitness and unfit
+plants are removed if the environment is over crowded.
+
 \subsubsection{Environmental parameters}
 
-There are three basic environmental parameters which has an effect on the
-plants. The amount of sun (0-100\%), water (0-100\%) and the nutrition available
-in the ground.
+There are three basic environmental parameters which have an effect on the
+plants.
+
+\begin{description}[leftmargin=!,labelindent=0.2in,labelwidth=0.5in]
+  \item[sun]       The amount of sunlight
+  \item[water]     The availability of water
+  \item[nutrition] The nutritional content of the soil
+\end{description}
+
+Each of these parameters initially ranges from 0 to 100 and can be changed by
+the user interacting with the software. In addition, a mutation parameter
+controls the rate of change in the plant genomes.
+
+For the purpose of fitness calculations, a ``genetic pressure'' version of each
+of these parameters is calculated and used in the fitness function.
+\[pressure = 1 - (parameter / 100)\]
+
+\subsubsection{Plant parameters}
+
+When calculating each plants fitness several plant parameters are used:
+
+\begin{description}[leftmargin=!,labelindent=0.2in,labelwidth=0.1in]
+  \item[Stem ratio]    \hfill \\
+    Normalized stem width, $0 .. 1$
+  \item[Leaf ratio]    \hfill \\
+    Normalized leaf size, $0 .. 1$
+  \item[Stem count]    \hfill \\
+    The number of stem segments the plant has grown thus far.
+  \item[Leaf count]    \hfill \\
+    The number of leaves grown thus far.
+  \item[Storage space] \hfill \\
+    The total storage space available to the plant. We do not calculate an
+    actual volume but instead just use a combination of the stem width from the
+    plants genes and the number of stem segments.
+    \[ storageSpace = stemRatio \times stemCount \]
+  \item[Surface area]  \hfill \\
+    The total surface area available in the leaves for photosynthesis. Like the
+    storage space, this is a combination of the leaf size and the number of
+    leaves.
+    \[ surfaceArea = leafRatio \times leafCount \]
+\end{description}
+
+\subsubsection{Fitness calculation}
+
+The plant fitness function is divided by water, sun, an nutrient fitness. Each
+of these is calculated separately and the total fitness is the sum. We
+implemented the fitness equations such that if all the environmental parameters
+are equal, then all the fitness values will also be equal and the plants will
+evolve randomly. In a more comprehensive system, some plants could be considered
+more or less fit in any environment including an environment with equal
+environmental parameters.
+
+The following guidelines were used by our fitness function:
+
+\paragraph{Water fitness}
+\begin{itemize}
+  \item Large stems (high storage space) can conserve water and result in higher
+    fitness in dry environments.
+  \item A large surface area results in larger water loss and a lower
+    fitness in dry environments.
+\end{itemize}
+\vspace{-0.5em}
+\begin{eqnarray*}
+waterFitness &=& (storageSpace \times waterPressure) \\
+             &-& (surfaceArea \times waterPressure)
+\end{eqnarray*}
+
+\paragraph{Sunlight fitness}
+\begin{itemize}
+  \item A large surface area collects more light and results in a higher fitness
+    in shady environments.
+  \item More stem segments will result in a taller plant which can college more
+    light. We do not calculate actual heights, but assume that stem segments
+    improve light gathering.
+\end{itemize}
+\vspace{-0.5em}
+\begin{eqnarray*}
+sunFitness &=& (2 \times surfaceArea \times sunPressure) \\
+           &+& (stemCount \times sunPressure)
+\end{eqnarray*}
+
+\paragraph{Nutrition fitness}
+\begin{itemize}
+  \item Larger stems, more stem segments, and a larger surface all result in
+    higher nutrient requirements and thus lower the fitness in low quality soil.
+\end{itemize}
+\vspace{-0.5em}
+\begin{eqnarray*}
+nutrientFitness &=&-(surfaceArea \times nutrientPressure) \\
+                &+&-(storageSpace \times nutrientPressure) \\
+                &+&-(storageSpace \times nutrientPressure)
+\end{eqnarray*}
 
 \section{Conclusion}
+
+During our simulations we were able to adjust the environmental parameters in
+order to control the growth and evolution of different plant species. In many
+cases the evolved plants share some resemblance with natural plants found in
+similar environments. Some example of this include stout leafless plants
+resembling cacti which evolve in dry environments, large leafy plants resembling
+trees that evolve in shady environments, and small shrubby or grass like plants
+that evolve in poor soil conditions.
+
+In future programs we would recommend improving the genetic fitness functions by
+taking into consideration environmental information related to the neighboring
+plants in the environment. This would use more advanced lighting and collision
+detection to calculate sunlight based on shadows in the environment.
+
+In addition, more realistic fitness levels could be used that are not linear
+with regards to the amount of pressure from different environmental parameters.
+In our system, a leafy plant may always win over other plants in a shady
+simulation environment even though such as large pant may not be support in a
+physical environment to do water or soil limitations.
+
+Some difficulty was encountered evolving plants to appear realistic, and many
+limitations are inherit which are difficult to simulation in a computer graphics
+setting. For example, two physical plants which share a remarkable resemblances
+my be suited to different environments due to small evolutionary changes. Waxy
+leaves, for example, could result in a leafy plant well suited to a dry
+environment.
+
+Overall, we have shown that artificial plants based on L-Systems can be evolved
+in realistic ways based on abstract environmental parameters. Using L-Strings to
+represent plants results in both realistic looking shapes and provides the
+foundation for genetic algorithm for controlling the development of plant
+species.
 
 %%%%%%%%%%%%%%
 % References %
