@@ -9,6 +9,11 @@ import java.util.Scanner;
 public class Main {
 
 	/**
+	 * Maximum number of plants
+	 */
+	public static final int MAX_PLANTS = 30;
+
+	/**
 	 * Water value in percent
 	 */
 	public static int water = 50;
@@ -118,15 +123,30 @@ public class Main {
 	}
 
 	public void tick() {
-		// System.out.println("tick");
-
 		// TODO - use an interator or something instead of
 		//        doing an array copies of plants.
 		ArrayList<Plant> tmpPlants;
+		int doomed = 0;
 
-		// TODO - make this a global
-		//        is this event the best way to do this?
-		float max_plants = 50;
+		// Only run fitness for gorwing plants
+		if (plants.get(0).getAge() >= Plant.MIN_ITERATION) {
+			doomed = (plants.size() - MAX_PLANTS) / 2;
+
+			// Run fitness function
+			for (Plant plant : plants)
+				plant.update(water, sun, nutrition);
+
+			// Sort plants and remove unfit ones
+			Collections.shuffle(plants);
+			Collections.sort(plants);
+			for (int i = 0; i < doomed; i++)
+				plants.remove(0);
+		}
+
+		// Add offspring
+		tmpPlants = new ArrayList<Plant>(plants);
+		for (Plant plant : tmpPlants)
+			plants.addAll(plant.grow());
 
 		// Kill off old plants
 		tmpPlants = new ArrayList<Plant>(plants);
@@ -134,23 +154,8 @@ public class Main {
 			if (plant.getAge() >= Plant.MAX_AGE)
 				plants.remove(plant);
 
-		// Run fitness function
-		//float num = (float)plants.size();
-		//for (Plant plant : plants)
-		//	plant.update(water/num, sun/num, nutrition/num);
-		for (Plant plant : plants)
-			plant.update(water, sun, nutrition);
-
-		// Sort plants and remove unfit ones
-		Collections.shuffle(plants);
-		Collections.sort(plants);
-		while (plants.size() > max_plants)
-			plants.remove(0);
-
-		// Add offspring
-		tmpPlants = new ArrayList<Plant>(plants);
-		for (Plant plant : tmpPlants)
-			plants.addAll(plant.grow());
+		// Debug
+		System.out.println("tick - removed " + doomed);
 	}
 
 	/**

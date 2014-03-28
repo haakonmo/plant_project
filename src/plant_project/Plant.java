@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import com.google.common.base.CharMatcher;
 
 public class Plant implements Comparable<Plant> {
-	public static final int MINUMUM_ITERATION = 4;
-	public static final int MAX_ITERATION = 7;
-	public static final int MAX_AGE = 8;
+	public static final int   MIN_ITERATION = 4;
+	public static final int   MAX_ITERATION = 8;
+	public static final int   MAX_AGE       = 8;
 	public static final float MAX_REPRODUCTION_RADIUS = 2;
 
 	private float x, y, a;
@@ -76,24 +76,29 @@ public class Plant implements Comparable<Plant> {
 		double wfit = 0;
 		double sfit = 0;
 		double nfit = 0;
+		double efit = 0;
 
 		// Water
 		wfit  -= surfaceArea    * water;      // Large surface area looses water
-		wfit  += stemRatio      * water;      // Large stems can store water
+		wfit  += storageSpace   * water;      // Large stems can store water
 
 		// Sun
 		sfit  += surfaceArea*2  * sun;        // Large leaves gather more light
 		sfit  += stemCount      * sun;        // Taller plants have an advantage
 
 		// Nutrition
-		nfit  -= stemRatio      * nutrition;  // Large plants require more nutrients
-		nfit  -= surfaceArea    * nutrition;  // Large plants require more nutrients
-		nfit  -= stemCount      * nutrition;  // Large plants require more nutrients
+		nfit  -= surfaceArea  * nutrition;  // Large plants require more nutrients
+		nfit  -= storageSpace * nutrition;  // ..
+		nfit  -= stemCount    * nutrition;  // ..
 
 		// Other
 		//total += flowerCount;                 // Flowers help with reproduction
 
-		this.fitness = (float)(wfit+sfit+nfit);
+		// Sanity checkds
+		if (stemCount == 0)
+			efit = -100;
+
+		this.fitness = (float)(wfit+sfit+nfit+efit);
 
 		System.out.format("%7.2f + %7.2f + %7.2f = %7.2f\n",
 				wfit, sfit, nfit, this.fitness);
@@ -124,7 +129,7 @@ public class Plant implements Comparable<Plant> {
 
 		ArrayList<Plant> children = new ArrayList<Plant>();
 		++age;
-		if (MINUMUM_ITERATION <= age && age <= MAX_ITERATION) {
+		if (MIN_ITERATION <= age && age <= MAX_ITERATION) {
 			lString = LSystem.iterate(lString, gene.getRules());
 		}
 		if (age == gene.getMaturityAge()) {

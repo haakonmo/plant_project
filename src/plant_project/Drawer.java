@@ -300,6 +300,7 @@ public class Drawer extends WindowAdapter implements
 		Color flowerColor = plant.getGene().getFlowerColor();
 		float stemWidth   = plant.getGene().getStemWidth();
 		float leafSize    = plant.getGene().getLeafSize();
+		float maturityAge = plant.getGene().getMaturityAge();
 
 		gl.glPushMatrix();
 		// move to plant origin
@@ -328,8 +329,11 @@ public class Drawer extends WindowAdapter implements
 				this.drawLeaf(gl, stemColor, leafSize);
 				break;
 			case LSystem.FLOWER:
-				if (plant.getAge() >= Plant.MAX_ITERATION)
+				if (plant.getAge() >= maturityAge-1) {
+					gl.glTranslatef( stemWidth, 0f, 0f);
 					this.drawFlower(gl, flowerColor);
+					gl.glTranslatef(-stemWidth, 0f, 0f);
+				}
 				break;
 			case LSystem.PUSH:
 				// push position and angle
