@@ -1,16 +1,21 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 	<head>
+		<link rel="stylesheet" href="//releases.flowplayer.org/5.4.6/skin/minimalist.css">
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+		<script src="//releases.flowplayer.org/5.4.6/flowplayer.min.js"></script>
+
+		<title>Plant Modeling Using Environmental Parameters</title>
+		<script>
+			flowplayer.conf.ratio = 634/786;
+		</script>
 		<style>
-			.video {
-				float: left;
-			}
-			video {
+			.flowplayer {
 				height: 634px;
 				width:  786px;
+				margin: 0 0 2em 0;
 			}
 		</style>
-		<title>Plant Modeling Using Environmental Parameters</title>
 	</head>
 	<body>
 		<center>
@@ -69,42 +74,50 @@
 		<h3>Normal environment parameters</h3>
 		<p>Standard simulation using 50% values for all environmental
 		   parameters. A variety of plants evolve at random.</p>
-		<video controls>
-			<source src="video/normal.mp4" type="video/mp4">
-			Your browser does not support the video tag.
-		</video> 
+		<div class="flowplayer fixed-controls play-button no-volume no-mute">
+			<video>
+				<source type="video/mp4"   src="video/normal.mp4">
+				<source type="video/flash" src="video/normal.flv">
+			</video>
+		</div>
 
 		<h3>Barren environment</h3>
 		<p>Simulation of a barren environment with low soil nutrient
 		   levels. The simulation starts with default parameters after
 		   which the nutrient level is decreased. Consequently the
-		   plant species become smaller and simpler, appearing almost
-		   grass like. Later the nutrient levels are increased slightly
-		   and the sunlight level is decreased as well resulting in the
+		   plant species become smaller and simpler, appearing grass
+		   like. Later the nutrient levels are increased slightly and
+		   the sunlight level is decreased as well resulting in the
 		   evolution of leafy brush like plants.</p>
-		<video controls>
-			<source src="video/brush.mp4" type="video/mp4">
-			Your browser does not support the video tag.
-		</video> 
+		<div class="flowplayer fixed-controls play-button no-volume no-mute">
+			<video>
+				<source type="video/mp4"   src="video/brush.mp4">
+				<source type="video/flash" src="video/brush.flv">
+			</video>
+		</div>
 
 		<h3>Dry environment</h3>
 		<p>Simulation of a dry environment with low water levels.
 		   The initially plant species quickly loose their leaves and
 		   begin to grow thick stems which could be used for water
 		   storage.</p>
-		<video controls>
-			<source src="video/cacti.mp4" type="video/mp4">
-			Your browser does not support the video tag.
-		</video> 
+		<div class="flowplayer fixed-controls play-button no-volume no-mute">
+			<video>
+				<source type="video/mp4"   src="video/cacti.mp4">
+				<source type="video/flash" src="video/cacti.flv">
+			</video>
+		</div>
 
 		<h3>Shady environment</h3>
 		<p>Simulation of a shady environment with medium nutrient
 		   levels. Selectional pressure favors large leafy plants which
 		   can collect the most light resulting in a dense forested
 		   environment.</p>
-		<video controls>
-			<source src="video/trees.mp4" type="video/mp4">
-			Your browser does not support the video tag.
-		</video> 
+		<div class="flowplayer fixed-controls play-button no-volume no-mute">
+			<video>
+				<source type="video/mp4"   src="video/trees.mp4">
+				<source type="video/flash" src="video/trees.flv">
+			</video>
+		</div>
 	</body>
 </html>

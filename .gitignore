@@ -2,6 +2,7 @@
 *.jar
 *.swp
 *.mp4
+*.flv
 config.mk
 bin/
 lib/
